@@ -78,6 +78,10 @@ class Params:
     delta_E: float
     beta: float
     gamma: float
+    N_rho_over_N0: float
+    eta_rho: float
+    N_delta_over_N0: float
+    nu_P: float
     L0: float
     xi_lim: float
     xi_star: float
@@ -106,6 +110,14 @@ class Params:
     def Y0(self) -> float:
         """Edible kg / year at t0 with S(P0)=1 and Q=Q0."""
         return self.N0 * self.productivity(self.Q0)
+
+    @property
+    def N_rho(self) -> float:
+        return self.N_rho_over_N0 * self.N0
+
+    @property
+    def N_delta(self) -> float:
+        return self.N_delta_over_N0 * self.N0
 
     def productivity(self, quality: float) -> float:
         """Edible kg per standing-animal-year, falling in quality."""
@@ -148,6 +160,10 @@ def params_from_mapping(raw: dict) -> Params:
         delta_E=float(raw["delta_E"]),
         beta=float(raw["beta"]),
         gamma=float(raw["gamma"]),
+        N_rho_over_N0=float(raw.get("N_rho_over_N0", 0.85)),
+        eta_rho=float(raw.get("eta_rho", 0.08)),
+        N_delta_over_N0=float(raw.get("N_delta_over_N0", 0.70)),
+        nu_P=float(raw.get("nu_P", 0.25)),
         L0=float(raw["L0"]),
         xi_lim=float(raw["xi_lim"]),
         xi_star=float(raw["xi_star"]),

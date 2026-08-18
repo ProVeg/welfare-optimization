@@ -58,7 +58,8 @@ def plot_trajectories(trajs: list[Trajectory], p, path: Path) -> None:
         "Caption: Lines are strategies. Dotted lines are hard ceilings. Values above the "
         "biophysical line mean livestock is already past its EAT-Lancet food-system allocation. "
         "Open-loop diagnostics may stay over that line; the optimizer must not make the overshoot worse "
-        f"and should be at or under the allocation from {p.fsb_year:.0f} onward.",
+        f"and should be at or under the allocation from {p.fsb_year:.0f} onward. "
+        "Quality can rise on its own only after the herd is well below today; remaining meat can get a small delicacy markup.",
     )
     path.parent.mkdir(parents=True, exist_ok=True)
     fig.savefig(path)

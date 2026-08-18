@@ -7,6 +7,7 @@ from dataclasses import dataclass
 import numpy as np
 from scipy.optimize import Bounds, NonlinearConstraint, minimize
 
+from cwo.dynamics import delicacy_markup
 from cwo.parameters import Params
 
 
@@ -39,6 +40,7 @@ def _closed(alpha: float, u_w: float, u_d: float, p: Params):
     pi_conv = p.pi0
     pi_hw = p.pi0 / (1.0 + p.kappa_pi * p.Q_ecc)
     n = y * ((1.0 - alpha) / pi_conv + alpha / pi_hw)
+    price_ratio = price_ratio * float(delicacy_markup(n, p))
     phi = (1.0 - alpha) * p.phi_conv + alpha * p.phi_hw
     j = p.omega * n * phi
     e_stock = p.E0 * (n / p.N0) * (1.0 + p.kappa * alpha) / (1.0 + p.kappa * p.Q0)

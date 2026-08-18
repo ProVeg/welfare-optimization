@@ -21,6 +21,17 @@ def smooth_plus(x, eps: float):
     return 0.5 * (x + np.sqrt(x * x + eps))
 
 
+def density_relief(n, p: Params):
+    """(1 - N/N_ρ)_+ : extra Q growth only after headcount falls past the density threshold."""
+    return smooth_plus(1.0 - n / max(p.N_rho, 1e-30), p.smooth_eps)
+
+
+def delicacy_markup(n, p: Params):
+    """(N_δ / min(N, N_δ))^ν : 1 until N < N_δ, then a residual-luxury premium."""
+    n_min = n - smooth_plus(n - p.N_delta, p.smooth_eps)
+    return (p.N_delta / max(float(n_min), 1e-30)) ** p.nu_P
+
+
 def productivity(quality, p: Params):
     return p.pi0 / (1.0 + p.kappa_pi * quality)
 
@@ -93,10 +104,17 @@ def rhs(time, state, u_w, u_d, p: Params) -> np.ndarray:
         p.r * (1.0 - p.epsilon * (price - p.P0) / p.P0) * species_replacement(price, p)
         - p.lambda_D * u_d
     ) * output_y
-    dQ = p.eta_W * a_w * (p.Q_max - quality) - sigma * quality
+    dQ = (
+        p.eta_W * a_w * (p.Q_max - quality)
+        + p.eta_rho * density_relief(n, p) * (p.Q_max - quality)
+        - sigma * quality
+    )
     dE = p.alpha_E * n * (1.0 + p.kappa * quality) - p.delta_E * pressure
     dP = p.gamma * (
-        welfare_cost(quality, p) * np.exp(p.beta * (pressure - p.E0) / p.E_lim) - price
+        welfare_cost(quality, p)
+        * np.exp(p.beta * (pressure - p.E0) / p.E_lim)
+        * delicacy_markup(n, p)
+        - price
     )
     dL = p.theta_L * a_w * n - p.delta_L * labor
     return np.array([dY, dQ, dE, dP, dL], dtype=float)

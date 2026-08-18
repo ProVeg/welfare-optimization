@@ -1,0 +1,45 @@
+---
+description: Keep README.md files current as practical guides for non-experts
+alwaysApply: true
+---
+
+# Keep README files up to date
+
+README.md files are the practical guide for people who are not experts in this repo. After any change that affects how someone finds, runs, or understands the work, update the nearest README in the same turn.
+
+## Which README
+
+| Change lives in | Update |
+| --- | --- |
+| Repo-wide layout, setup, or how packages relate | root `README.md` |
+| A package, model, or folder with its own README | that folder’s `README.md` |
+| New package or implementation folder | add a README there, and link it from the root |
+
+Do not leave a new runnable folder without a README. Do not put setup or CLI details only in chat.
+
+## What a README must answer
+
+A non-expert should be able to:
+
+1. **Find it** — what this folder is, in plain language (no unexplained symbols).
+2. **Run it** — copy-pasteable commands (PowerShell and Unix where both matter).
+3. **Set it** — what the main inputs/parameters mean, including units and which values are calibrated vs measured.
+4. **Read the output** — where files go, what each figure/CSV/report is, and how to tell a good result from a broken constraint.
+
+If a command, flag, config key, output path, or figure name changed, the README must match the code. Delete or rewrite stale sections; do not leave contradictory instructions.
+
+## Voice
+
+Write for a reader who has not seen the math notes. Prefer “what to type” and “what the number means” over derivations. Link to `models/` or literature for theory; do not duplicate proofs in the README.
+
+```markdown
+# ❌ BAD — after adding `python -m cwo optimize --solver slsqp`
+(README still says only “run the model”)
+
+# ✅ GOOD — same change
+## Run
+python -m cwo optimize --config configs/default.yaml --solver slsqp
+`--solver slsqp` is the fallback if GEKKO/IPOPT is unavailable.
+```
+
+Skip README edits for pure internals that cannot change how a non-expert navigates or uses the repo (typo in a comment, test-only refactor with the same CLI).

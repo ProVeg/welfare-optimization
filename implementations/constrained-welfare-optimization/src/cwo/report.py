@@ -70,6 +70,9 @@ def write_report(
         f"- Suffering is an index (chicken-equivalent). Absolute billions are not a census of global SADs.",
         f"- Demand-reduction rate λ_D = {p.lambda_D} /year and welfare-campaign speed η_W = {p.eta_W} /year "
         "are **calibrated unknowns**, not measured campaign productivities. Do not read them as cost-effectiveness.",
+        f"- Quality can rise without extra campaigns only after standing animals fall below "
+        f"{p.N_rho_over_N0:.0%} of today (leftover housing used as more space per animal). "
+        f"Meat gets a small 'delicacy' price markup only after the herd falls below {p.N_delta_over_N0:.0%} of today.",
         "",
         "## Open-loop strategies (ceilings monitored, not forced)",
         "",

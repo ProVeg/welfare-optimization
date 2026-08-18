@@ -101,13 +101,31 @@ def _gekko_solve(p: Params, u_w0: np.ndarray, u_d0: np.ndarray) -> tuple[np.ndar
     weight = raw - 0.5 * ((raw - 1.0) + m.sqrt((raw - 1.0) ** 2 + p.smooth_eps))
     phi = p.phi_conv + (p.phi_hw - p.phi_conv) * weight
     h_over_p0 = m.exp(p.h_exp * q)
+    n_rho_hat = p.N_rho_over_N0
+    n_delta_hat = p.N_delta_over_N0
+    dens_gap = 0.5 * (
+        (1.0 - n_hat / n_rho_hat)
+        + m.sqrt((1.0 - n_hat / n_rho_hat) ** 2 + p.smooth_eps)
+    )
+    n_min_hat = n_hat - 0.5 * (
+        (n_hat - n_delta_hat) + m.sqrt((n_hat - n_delta_hat) ** 2 + p.smooth_eps)
+    )
+    delicacy = (n_delta_hat / n_min_hat) ** p.nu_P
 
     m.Equation(
         y.dt() == (p.r * (1.0 - p.epsilon * (pr - 1.0)) * s_rep - p.lambda_D * u_d) * y
     )
-    m.Equation(q.dt() == p.eta_W * a_w * (p.Q_max - q) - sigma * q)
+    m.Equation(
+        q.dt()
+        == p.eta_W * a_w * (p.Q_max - q)
+        + p.eta_rho * dens_gap * (p.Q_max - q)
+        - sigma * q
+    )
     m.Equation(e.dt() == alpha_e_hat * n_hat * (1.0 + p.kappa * q) - p.delta_E * e)
-    m.Equation(pr.dt() == p.gamma * (h_over_p0 * m.exp(p.beta * (e - e0)) - pr))
+    m.Equation(
+        pr.dt()
+        == p.gamma * (h_over_p0 * m.exp(p.beta * (e - e0)) * delicacy - pr)
+    )
     m.Equation(el.dt() == theta_hat * a_w * n_hat - p.delta_L * el)
     m.Equation(j.dt() == n_hat * (phi / p.phi_conv))
 

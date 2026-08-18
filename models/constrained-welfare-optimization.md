@@ -214,6 +214,8 @@ r(t)\left(1 - \varepsilon \frac{P-P_0}{P_0}\right) S(P)
 \dot Q
 &=
 \eta_W A_W \,(Q_{\max} - Q)
+\;+\;
+\eta_{\rho}\, \bigl(1 - N/N_{\rho}\bigr)_+ (Q_{\max} - Q)
 \;-\;
 \sigma\!\left(\frac{N}{L}\right) Q, \\
 \dot E
@@ -223,7 +225,7 @@ r(t)\left(1 - \varepsilon \frac{P-P_0}{P_0}\right) S(P)
 \delta_E E, \\
 \dot P
 &=
-\gamma \bigl[ h(Q)\, e^{\beta (E-E_0)/E^{\lim}} - P \bigr], \\
+\gamma \bigl[ h(Q)\, e^{\beta (E-E_0)/E^{\lim}}\, \bigl(N_{\delta}/\min\{N,N_{\delta}\}\bigr)^{\nu} - P \bigr], \\
 \dot L
 &=
 \theta_L A_W N - \delta_L L.
@@ -234,6 +236,8 @@ This is the existing five-equation system with two corrections:
 
 1. **Demand \(Y\) vs headcount \(N\).** \(N = Y\, S(P)/\pi(Q)\). The old \(\dot N\) equation mixed demand growth with substitution; those now sit in \(\dot Y\) and in the map \(N(Y,Q,P)\).
 2. **Controls are explicit.** \(\lambda_{\mathrm{DR}}(t) = \lambda_D u_D(t)\), \(A_W(t)\) as above. The planner chooses \(u\), not the exogenous paths.
+3. **Density relief (threshold).** \(\bigl(1-N/N_{\rho}\bigr)_+\) is zero at today's headcount. It turns on only after \(N\) falls far enough that leftover housing/land is used as lower stocking density rather than mothballed sheds (Dawkins et al. 2004: density bites mainly at very high kg/m²; Buijs et al. 2009: no single density cliff; Waterhouse 1996: cutting stock without keeping care inputs does not raise performance). This is *enabling* space for \(Q\), not an automatic good life. Labor failure \(\sigma(N/L)\) still dominates if staff are cut with the herd.
+4. **Delicacy / residual-luxury price.** \(\bigl(N_{\delta}/\min\{N,N_{\delta}\}\bigr)^{\nu}\) is 1 until \(N<N_{\delta}\). Below that, remaining meat carries a quantity premium (inverse-demand / selection of high-WTP buyers; Lusk and Tonsor 2016: meat demand more inelastic at higher prices; livestock price tracking demand–supply imbalance, Dieci et al. arXiv:1803.05404). This is **not** the shift of the demand curve from \(u_D\): a pure demand campaign would *lower* \(P\). The extra factor is farm exit plus remaining consumption as a luxury. Keep \(\nu \ll 1/\varepsilon\) so a 50% headcount cut is a modest premium, not a \(2^{1/\varepsilon}\) spike.
 
 **Regularity (required for the NLP transcription).** Replace \((x)_+\) by a smooth plus \(\frac12\bigl(x + \sqrt{x^2+\epsilon}\bigr)\), \(\epsilon \sim 10^{-6}\). Take \(\sigma(\xi) = \sigma_0 \xi^p / (\xi_\star^p + \xi^p)\) (smooth saturating failure rate), \(p \ge 2\). Take \(h \in C^2\), \(h' > 0\), \(h'' \ge 0\), \(h(0) = P_0\). Take \(\pi(Q) = \pi_0 / (1 + \kappa_\pi Q)\) with \(\kappa_\pi > 0\). Then the vector field is \(C^1\) on a neighborhood of the positive orthant, hence locally Lipschitz: IVPs are unique.
 
@@ -324,7 +328,7 @@ Values are **point estimate / range / trajectory / unknown**, never a single une
 
 **First-order.** BAU demand path \(r(t)\) and its Global South share; initial headcount/output \(N_0,Y_0\) by species; SAD rates \(\varphi_{\mathrm{conv}}, \varphi_{\mathrm{hw}}\); welfare-impact markups \(e^{\mathrm{hw}}/e^{\mathrm{conv}}\) and \(\pi_{\mathrm{hw}}/\pi_{\mathrm{conv}}\); own-price elasticity \(\varepsilon\); WTP ceiling \(P^{\lim}\); planetary allocation \(E^{\lim}\); species replacement \(S(P)\); how much demand \(u_D\) can actually shift (\(\lambda_D\)).
 
-**Second-order.** Discount \(\rho\); environmental recovery \(\delta_E\); labor depreciation \(\delta_L\); advocacy cost \(c_W\) vs \(c_D\) except when the budget is very tight; shrimp/insects (huge \(N\), low \(\omega\), weak current campaign lever); AI substituting for \(L\); feed-tech decoupling of \(\kappa\).
+**Second-order.** Discount \(\rho\); environmental recovery \(\delta_E\); labor depreciation \(\delta_L\); density-relief rate \(\eta_{\rho}\) and delicacy exponent \(\nu\) (sweep; they change \(Q\) and \(P\) on deep demand cuts); advocacy cost \(c_W\) vs \(c_D\) except when the budget is very tight; shrimp/insects (huge \(N\), low \(\omega\), weak current campaign lever); AI substituting for \(L\); feed-tech decoupling of \(\kappa\).
 
 ### 7.2 Parameter blocks
 
@@ -426,6 +430,28 @@ Values are **point estimate / range / trajectory / unknown**, never a single une
 - **Scope:** Voluntary markets. Mandates can exceed WTP until political rollback.
 - **Source:** *Limits to Welfare* §4; Clark et al., *Food Policy* 68:112–127 (2017); ECC backsliding / ChickenTrack (as cited in the essay).
 - **Confidence:** medium for the EU/US \(10\)--\(15\%\) kink; low for a global scalar \(P^{\lim}\).
+
+### Density-relief threshold (quality vs headcount)
+- **Symbol:** \(N_{\rho}\), \(\eta_{\rho}\)
+- **Definition:** Headcount below which leftover housing/land is used as lower stocking density (not mothballed), so \(Q\) can rise without extra \(u_W\). Rate \(\eta_{\rho}\) is the extra approach of \(Q\) to \(Q_{\max}\).
+- **Units:** animals; 1/year
+- **Point estimate:** \(N_{\rho} = 0.85 N_0\) (about a 15% cut before density relief; Dawkins et al. 2004: welfare harm from density is clear mainly at very high kg/m², \(\ge 42\); Estevez 2007: health compromised below \(\sim 0.0625\)--\(0.07\) m²/bird \(\approx 34\)--\(38\) kg/m²). \(\eta_{\rho} = 0.08\)/year is **calibration**, not a measured campaign rate.
+- **Uncertainty / range:** \(N_{\rho}/N_0 \in [0.7, 1.0]\). At \(1.0\) any cut raises \(Q\); at \(0.7\) only a large contraction does. Buijs et al. 2009: no single density cliff — different indicators move at different kg/m². Yang et al. arXiv:2602.00111: calf play vs space is **non-monotone** (peak \(8\)--\(10\) m²). Waterhouse 1996: extensification without keeping inputs does **not** raise performance.
+- **Time development:** Housing stock is sticky on a 5–15 year campaign scale, then sheds are mothballed (relief fades). v1 keeps \(N_{\rho}\) constant.
+- **Scope:** Indoor poultry-like systems; weaker for already-extensive ruminants.
+- **Source:** Dawkins, Donnelly & Jones, *Nature* 427:342–344 (2004); Estevez, *Poultry Science* 86:1265 (2007); Buijs et al., *Poultry Science* 88:1536–1543 (2009); Waterhouse et al. in *Extensification* (1996); Yang et al. arXiv:2602.00111.
+- **Confidence:** high that *very high* density harms welfare; medium that global \(N\) cuts translate into lower kg/m² rather than fewer intensive farms; low on \(\eta_{\rho}\).
+
+### Delicacy / residual-luxury price exponent
+- **Symbol:** \(N_{\delta}\), \(\nu\)
+- **Definition:** Below \(N_{\delta}\), remaining meat carries a quantity premium \(\bigl(N_{\delta}/\min\{N,N_{\delta}\}\bigr)^{\nu}\) on top of production cost. Proxy for farm exit plus high-WTP residual demand, not for a leftward demand-curve shift.
+- **Units:** animals; dimensionless
+- **Point estimate:** \(N_{\delta} = 0.70 N_0\); \(\nu = 0.25\). A 50% headcount cut then marks up price by \((0.70/0.50)^{0.25} \approx 9\%\), inside the mass-market WTP band. Full inverse demand \(\nu = 1/\varepsilon \approx 1.7\) would explode \(P\) and is **rejected** for demand-side \(u_D\).
+- **Uncertainty / range:** \(\nu \in [0, 0.5]\). \(\nu = 0\) recovers cost-only pricing. Lusk and Tonsor (2016): meat demand more inelastic at higher prices (convex inverse demand). US cattle-herd tightness raises beef prices (supply shock). A pure \(u_D\) demand shift would *lower* \(P\); this term is the opposing residual-luxury channel.
+- **Time development:** Stronger if remaining consumers are high-income (selection); weaker if alternatives cap the premium.
+- **Scope:** High-income residual markets; weaker where meat is still a calorie staple.
+- **Source:** Lusk and Tonsor, *Applied Economic Perspectives and Policy* (2016), doi:10.1093/aepp/ppv050; Dieci, Mignot, Westerhoff, arXiv:1803.05404; Gallet, *AJAE* (2010b) for \(\varepsilon\); *Limits to Welfare* §4 (10–15% of consumers pay \(+30\%+\)).
+- **Confidence:** high that supply shocks raise meat prices; medium that a *smaller remaining industry* behaves like a luxury; low on \(\nu\).
 
 ### SAD rates (suffering intensity)
 - **Symbol:** \(\varphi_{s,\mathrm{conv}}, \varphi_{s,\mathrm{hw}}\), \(\phi(Q)\)
@@ -551,7 +577,7 @@ Values are **point estimate / range / trajectory / unknown**, never a single une
 - Dynamics and \(\mathbf{x}(t_0) = \mathbf{x}_0\) with \(E_0/E^{\lim}\approx 2\) (composite current / livestock FSB).
 - Static NLP of §3 as a 2050 diagnostic (three scenarios + true min).
 
-**Dynamics:** Smoothed five-ODE system in §4.2, extending `literature/welfare-differential-equations.md`.
+**Dynamics:** Smoothed five-ODE system in §4.2, including density-relief \(\eta_{\rho}(1-N/N_{\rho})_+(Q_{\max}-Q)\) and delicacy markup \((N_{\delta}/\min\{N,N_{\delta}\})^{\nu}\) on the price target.
 
 **Suggested algorithm family:** GEKKO or Pyomo.dae collocation + Ipopt; multi-start from welfare-only, reduction-only, joint, and BAU. Static §3 with the same solver. Do not start with NSGA-III.
 

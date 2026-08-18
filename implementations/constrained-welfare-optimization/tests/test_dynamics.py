@@ -58,6 +58,18 @@ class DynamicsTests(unittest.TestCase):
         red = simulate(self.p, constant_control(0.0, 1.0), label="red")
         self.assertLess(red.N[-1], bau.N[-1])
 
+    def test_density_relief_only_below_threshold(self) -> None:
+        from cwo.dynamics import density_relief
+
+        self.assertAlmostEqual(float(density_relief(self.p.N0, self.p)), 0.0, places=5)
+        self.assertGreater(float(density_relief(0.5 * self.p.N0, self.p)), 0.2)
+
+    def test_delicacy_markup_only_below_threshold(self) -> None:
+        from cwo.dynamics import delicacy_markup
+
+        self.assertAlmostEqual(float(delicacy_markup(self.p.N0, self.p)), 1.0, places=5)
+        self.assertGreater(float(delicacy_markup(0.4 * self.p.N0, self.p)), 1.05)
+
     def test_static_optimum_obeys_inequalities(self) -> None:
         out = solve_static(self.p)
         for name, value in out.slack.items():

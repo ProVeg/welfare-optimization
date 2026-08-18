@@ -68,6 +68,15 @@ delta_E: 1.0          # 1/year; flow-like pressure (land-conversion lag omitted 
 # Markup is 1 at today's already-overshot E0 so P0 stays the observed price.
 beta: 0.20            # 1; scarcity markup exp(beta (E-E0)/E_lim) in the price ODE
 gamma: 0.50           # 1/year; price adjustment toward cost
+# Density relief: Q can rise without extra campaigns only after N falls below
+# N_rho (leftover housing used as lower kg/m², not mothballed sheds).
+# Dawkins 2004: density bites mainly at very high kg/m²; Buijs 2009: no single cliff.
+N_rho_over_N0: 0.85   # 1; threshold N_ρ / N0
+eta_rho: 0.08         # 1/year; calibration: true
+# Delicacy premium: remaining meat is marked up once N < N_delta (farm exit +
+# high-WTP residual demand). ν << 1/ε so this is not full inverse demand.
+N_delta_over_N0: 0.70 # 1; threshold N_δ / N0
+nu_P: 0.25            # 1; quantity exponent (Lusk–Tonsor inelastic-at-high-P)
 
 # --- Labor / operational ceiling ----------------------------------------
 # L0 normalized so N0/L0 is the current animal-to-staff ratio.
