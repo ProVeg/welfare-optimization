@@ -16,6 +16,23 @@ def _slack_sentence(name: str, value: float) -> str:
     return f"{name} broke its ceiling (worst overshoot {-value:.3g})."
 
 
+def _env_sentence(tr: Trajectory, p: Params) -> str:
+    sl = min_slacks(tr)
+    e0_over = float(tr.E[0] - p.E_lim)
+    eT_over = float(tr.E[-1] - p.E_lim)
+    if e0_over > 0:
+        end = (
+            f"ended {eT_over:.2f} above it"
+            if eT_over > 0
+            else f"ended {-eT_over:.2f} below it"
+        )
+        return (
+            f"Environmental pressure started {e0_over:.2f} above the livestock food-system allocation "
+            f"and {end} (worst overshoot in the run {max(0.0, -sl['E']):.2f})."
+        )
+    return _slack_sentence("Environmental pressure", sl["E"])
+
+
 def write_report(
     path: Path,
     p: Params,
@@ -27,15 +44,29 @@ def write_report(
     lines = [
         "# Simulation report",
         "",
-        "This run asks: over 2026–2050, how should effort be split between raising farmed-animal "
+        "This run asks: over "
+        f"{p.t0:.0f}–{p.T:.0f}, "
+        "how should effort be split between raising farmed-animal "
         "welfare standards and reducing demand, if the only goal is less total suffering "
         "(Suffering-Adjusted Days), while environmental pressure, meat prices, and animals-per-worker "
-        "must stay at or below hard ceilings — they may fall below those ceilings.",
+        "must stay at or below hard ceilings — they may fall below those ceilings. "
+        "Livestock **starts already past** its share of the EAT-Lancet 2025 food-system ceiling "
+        f"(about {p.E0/p.E_lim:.1f} times the allocation). That is the empirical overshoot, not a bug. "
+        "Open-loop runs may stay over the environmental line. The optimizer must not raise pressure further "
+        f"and should be at or under the allocation from {p.fsb_year:.0f} onward.",
         "",
         "## What the numbers are",
         "",
-        f"- Horizon: {p.t0:.0f}–{p.T:.0f}.",
+        f"- Horizon: {p.t0:.0f}–{p.T:.0f}"
+        + (
+            f". The livestock food-system allocation still binds from {p.fsb_year:.0f}."
+            if p.T > p.fsb_year + 0.5
+            else "."
+        ),
         f"- Animals are a poultry-like standing population starting at {p.N0/1e9:.2f} billion.",
+        f"- Biophysical pressure starts at {p.E0:.2f} times the livestock allocation of the EAT-Lancet 2025 "
+        "food-system ceiling (composite of climate, land, N, and P vs Rockström / Steffen / Richardson boundaries). "
+        "The dotted line at 1.0 is that allocation, not 'today's impact'.",
         f"- Suffering is an index (chicken-equivalent). Absolute billions are not a census of global SADs.",
         f"- Demand-reduction rate λ_D = {p.lambda_D} /year and welfare-campaign speed η_W = {p.eta_W} /year "
         "are **calibrated unknowns**, not measured campaign productivities. Do not read them as cost-effectiveness.",
@@ -50,7 +81,7 @@ def write_report(
         lines.append("")
         lines.append(f"- Cumulative suffering index: **{tr.J/1e9:.2f} billion**.")
         lines.append(f"- Final standing animals: {tr.N[-1]/1e9:.2f} billion; final quality: {tr.Q[-1]:.2f}.")
-        lines.append(f"- {_slack_sentence('Environmental pressure', sl['E'])}")
+        lines.append(f"- {_env_sentence(tr, p)}")
         lines.append(f"- {_slack_sentence('Price', sl['P'])}")
         lines.append(f"- {_slack_sentence('Animals-per-worker', sl['labor'])}")
         lines.append("")
@@ -75,7 +106,7 @@ def write_report(
             f"- Mean welfare-campaign intensity: {opt.trajectory.u_W.mean():.2f}; "
             f"mean demand-reduction intensity: {opt.trajectory.u_D.mean():.2f}."
         )
-        lines.append(f"- {_slack_sentence('Environmental pressure', sl['E'])}")
+        lines.append(f"- {_env_sentence(opt.trajectory, p)}")
         lines.append(f"- {_slack_sentence('Price', sl['P'])}")
         lines.append(f"- {_slack_sentence('Animals-per-worker', sl['labor'])}")
         q = opt.trajectory.Q
@@ -96,8 +127,10 @@ def write_report(
             "This is a **local** minimum of a non-convex problem. Another start could do better."
         )
 
-    lines += ["", "## 2050 snapshot check (separate static NLP)", ""]
-    lines.append("| Case | High-welfare share | Demand-reduction effort | 2050 suffering index | Feasible? |")
+    lines += ["", f"## {p.T:.0f} snapshot check (separate static NLP)", ""]
+    lines.append(
+        f"| Case | High-welfare share | Demand-reduction effort | {p.T:.0f} suffering index | Feasible? |"
+    )
     lines.append("| --- | --- | --- | --- | --- |")
     for row in static_rows:
         feasible = "yes" if row.success else "no"

@@ -95,7 +95,9 @@ def rhs(time, state, u_w, u_d, p: Params) -> np.ndarray:
     ) * output_y
     dQ = p.eta_W * a_w * (p.Q_max - quality) - sigma * quality
     dE = p.alpha_E * n * (1.0 + p.kappa * quality) - p.delta_E * pressure
-    dP = p.gamma * (welfare_cost(quality, p) * np.exp(p.beta * pressure / p.E_lim) - price)
+    dP = p.gamma * (
+        welfare_cost(quality, p) * np.exp(p.beta * (pressure - p.E0) / p.E_lim) - price
+    )
     dL = p.theta_L * a_w * n - p.delta_L * labor
     return np.array([dY, dQ, dE, dP, dL], dtype=float)
 

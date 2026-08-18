@@ -17,7 +17,7 @@ from scipy.optimize import Bounds, NonlinearConstraint, minimize
 from cwo.parameters import Params
 from cwo.simulate import Trajectory, piecewise_control, simulate
 
-GEKKO_TIMEOUT_SEC = 75
+GEKKO_TIMEOUT_SEC = 120
 
 
 @dataclass
@@ -84,7 +84,8 @@ def _gekko_solve(p: Params, u_w0: np.ndarray, u_d0: np.ndarray) -> tuple[np.ndar
 
     y = m.Var(value=1.0, lb=1e-6)  # Y / Y0
     q = m.Var(value=p.Q0, lb=0.0, ub=p.Q_max)
-    e = m.Var(value=p.E0 / p.E_lim, lb=0.0, ub=1.0)  # E / E_lim
+    e0 = p.E0 / p.E_lim
+    e = m.Var(value=e0, lb=0.0)  # no upper bound: we may already be past E_lim
     pr = m.Var(value=1.0, lb=1e-6, ub=p.P_lim / p.P0)  # P / P0
     el = m.Var(value=1.0, lb=1e-6)  # L / L0
     j = m.Var(value=0.0, lb=0.0)
@@ -106,12 +107,17 @@ def _gekko_solve(p: Params, u_w0: np.ndarray, u_d0: np.ndarray) -> tuple[np.ndar
     )
     m.Equation(q.dt() == p.eta_W * a_w * (p.Q_max - q) - sigma * q)
     m.Equation(e.dt() == alpha_e_hat * n_hat * (1.0 + p.kappa * q) - p.delta_E * e)
-    m.Equation(pr.dt() == p.gamma * (h_over_p0 * m.exp(p.beta * e) - pr))
+    m.Equation(pr.dt() == p.gamma * (h_over_p0 * m.exp(p.beta * (e - e0)) - pr))
     m.Equation(el.dt() == theta_hat * a_w * n_hat - p.delta_L * el)
     m.Equation(j.dt() == n_hat * (phi / p.phi_conv))
 
     m.Equation(xi_hat * el - n_hat >= 0)
     m.Equation(p.B - p.c_W * u_w - p.c_D * u_d >= 0)
+    # Already past the ceiling: do not require e(t)<=1 at t0 (infeasible).
+    # Do not worsen the overshoot; from the EAT-Lancet year onward E<=E_lim.
+    m.Equation(e <= e0 + 0.05)
+    restore = (p.t0 + mesh >= p.fsb_year).astype(float)
+    m.Equation(e * m.Param(value=restore) <= restore)
 
     final = np.zeros(nt)
     final[-1] = 1.0
@@ -141,7 +147,7 @@ def _slsqp_solve(p: Params, u_w0: np.ndarray, u_d0: np.ndarray) -> tuple[np.ndar
 
     def traj_from(z) -> Trajectory:
         uw, ud = unpack(z)
-        coarse = np.linspace(0.0, p.horizon_years, 49)
+        coarse = np.linspace(0.0, p.horizon_years, max(49, int(p.horizon_years) + 1))
         return simulate(
             p,
             piecewise_control(knots, uw, ud),
@@ -154,9 +160,12 @@ def _slsqp_solve(p: Params, u_w0: np.ndarray, u_d0: np.ndarray) -> tuple[np.ndar
 
     def ineq(z):
         tr = traj_from(z)
+        e_noworse = float(p.E0 * 1.05 - np.max(tr.E))
+        e_restore = _restore_slack(tr, p)
         return np.array(
             [
-                float(np.min(tr.slack_E)),
+                e_noworse,
+                e_restore,
                 float(np.min(tr.slack_P)),
                 float(np.min(tr.slack_labor)),
                 float(np.min(tr.slack_budget)),
@@ -175,15 +184,38 @@ def _slsqp_solve(p: Params, u_w0: np.ndarray, u_d0: np.ndarray) -> tuple[np.ndar
     return knots, uw, ud, bool(result.success), str(result.message)
 
 
-def _is_feasible(traj: Trajectory) -> bool:
-    return min(float(traj.slack_E.min()), float(traj.slack_P.min()), float(traj.slack_labor.min()), float(traj.slack_budget.min())) >= -1e-3
+def _restore_slack(traj: Trajectory, p: Params) -> float:
+    """Tightest environmental slack from the food-system target year onward."""
+    mask = np.asarray(traj.t) >= p.fsb_year
+    if not np.any(mask):
+        return float(traj.slack_E[-1])
+    return float(np.min(traj.slack_E[mask]))
+
+
+def _is_feasible(traj: Trajectory, p: Params) -> bool:
+    """Price, labor, and budget must hold along the path.
+
+    If environmental pressure already starts above the ceiling, require no
+    further rise and E<=E_lim from the EAT-Lancet year onward — not at t0.
+    """
+    p_ok = float(traj.slack_P.min()) >= -1e-3
+    labor_ok = float(traj.slack_labor.min()) >= -1e-3
+    budget_ok = float(traj.slack_budget.min()) >= -1e-3
+    starts_over = float(traj.slack_E[0]) < -1e-3
+    if starts_over:
+        e_ok = (float(np.max(traj.E)) <= float(traj.E[0]) * 1.05 + 1e-6) and (
+            _restore_slack(traj, p) >= -1e-3
+        )
+    else:
+        e_ok = float(np.min(traj.slack_E)) >= -1e-3
+    return p_ok and labor_ok and budget_ok and e_ok
 
 
 def optimize(p: Params, prefer: str = "gekko") -> OptResult:
     """Multi-start OCP. Re-simulates the best controls with the IVP for plots."""
     tried: list[str] = []
     best: OptResult | None = None
-    nt = min(p.ocp_nodes, 41)
+    nt = min(int(p.ocp_nodes), 121)
     mesh_default = np.linspace(0.0, p.horizon_years, nt)
 
     def consider(name: str, solver: str, mesh, uw, ud, message: str) -> None:
@@ -195,7 +227,7 @@ def optimize(p: Params, prefer: str = "gekko") -> OptResult:
             else piecewise_control(mesh, uw, ud)
         )
         traj = simulate(p, control, label=f"Optimum ({solver})", color="#1f4e79", linestyle="-")
-        feasible = _is_feasible(traj)
+        feasible = _is_feasible(traj, p)
         note = (
             "feasible on the simulated path; states may sit below ceilings"
             if feasible
@@ -205,7 +237,7 @@ def optimize(p: Params, prefer: str = "gekko") -> OptResult:
         if best is None:
             best = cand
             return
-        cand_ok, best_ok = _is_feasible(cand.trajectory), _is_feasible(best.trajectory)
+        cand_ok, best_ok = _is_feasible(cand.trajectory, p), _is_feasible(best.trajectory, p)
         if cand_ok and not best_ok:
             best = cand
         elif cand_ok == best_ok and cand.J < best.J:
@@ -221,7 +253,7 @@ def optimize(p: Params, prefer: str = "gekko") -> OptResult:
             except Exception as exc:  # noqa: BLE001
                 tried.append(f"{name}/gekko-fail:{type(exc).__name__}")
 
-    if best is None or not _is_feasible(best.trajectory):
+    if best is None or not _is_feasible(best.trajectory, p):
         for name, uw0, ud0 in _starts(nt):
             try:
                 knots, uw, ud, ok, msg = _slsqp_solve(p, uw0, ud0)

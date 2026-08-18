@@ -1,4 +1,4 @@
-"""2050 snapshot NLP with inequality ceilings (scipy SLSQP)."""
+"""Terminal-year snapshot NLP with inequality ceilings (scipy SLSQP)."""
 
 from __future__ import annotations
 
@@ -26,7 +26,7 @@ class StaticResult:
 
 
 def _closed(alpha: float, u_w: float, u_d: float, p: Params):
-    """Demand-determined 2050 snapshot. Ceilings are inequalities."""
+    """Demand-determined snapshot at the terminal year. Ceilings are inequalities."""
     alpha = float(np.clip(alpha, 0.0, 1.0))
     u_w = float(np.clip(u_w, 0.0, 1.0))
     u_d = float(np.clip(u_d, 0.0, 1.0))
@@ -41,7 +41,7 @@ def _closed(alpha: float, u_w: float, u_d: float, p: Params):
     n = y * ((1.0 - alpha) / pi_conv + alpha / pi_hw)
     phi = (1.0 - alpha) * p.phi_conv + alpha * p.phi_hw
     j = p.omega * n * phi
-    e_stock = p.E0 * (y / p.Y0) * (1.0 + p.kappa * alpha)
+    e_stock = p.E0 * (n / p.N0) * (1.0 + p.kappa * alpha) / (1.0 + p.kappa * p.Q0)
     labor_need = n * ((1.0 - alpha) + alpha * 1.3)
     inherited = 0.10
     alpha_max = inherited + (1.0 - inherited) * (1.0 - np.exp(-p.static_alpha_max_k * u_w))
@@ -82,7 +82,7 @@ def diagnostics(p: Params) -> list[StaticResult]:
 
 
 def solve_static(p: Params) -> StaticResult:
-    x0 = np.array([0.1, 0.0, 1.0])
+    x0 = np.array([0.0, 0.0, 1.0])
 
     def obj(x):
         return _closed(x[0], x[1], x[2], p)[2]

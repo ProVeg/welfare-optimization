@@ -55,8 +55,10 @@ def plot_trajectories(trajs: list[Trajectory], p, path: Path) -> None:
     axes[2, 1].set_title("Suffering added up over time")
     _caption(
         fig,
-        "Caption: Lines are strategies. Dotted lines are hard ceilings. A line may stay below a ceiling "
-        "(room left) or cross it (the open-loop diagnostics are allowed to violate; the optimizer is not).",
+        "Caption: Lines are strategies. Dotted lines are hard ceilings. Values above the "
+        "biophysical line mean livestock is already past its EAT-Lancet food-system allocation. "
+        "Open-loop diagnostics may stay over that line; the optimizer must not make the overshoot worse "
+        f"and should be at or under the allocation from {p.fsb_year:.0f} onward.",
     )
     path.parent.mkdir(parents=True, exist_ok=True)
     fig.savefig(path)
@@ -101,20 +103,25 @@ def plot_slack(trajs: list[Trajectory], path: Path) -> None:
     axes[0].legend(loc="best")
     _caption(
         fig,
-        "Caption: Positive = still below the hard limit. Negative = the strategy has already broken that ceiling.",
+        "Caption: Positive = still below the hard limit. Negative = already over that ceiling. "
+        "The environmental panel starts negative because livestock is already past its food-system allocation.",
     )
     path.parent.mkdir(parents=True, exist_ok=True)
     fig.savefig(path)
     plt.close(fig)
 
 
-def plot_sad_bars(trajs: list[Trajectory], path: Path) -> None:
+def plot_sad_bars(trajs: list[Trajectory], path: Path, p=None) -> None:
     fig, ax = plt.subplots(figsize=(8, 4.5))
     labels = [tr.label for tr in trajs]
     values = [tr.J / 1e9 for tr in trajs]
     colors = [tr.color for tr in trajs]
     ax.bar(labels, values, color=colors, edgecolor="black", linewidth=0.5)
-    ax.set_ylabel("Cumulative suffering 2026–2050 (index, billions)")
+    if p is None:
+        period = "the whole period"
+    else:
+        period = f"{p.t0:.0f}–{p.T:.0f}"
+    ax.set_ylabel(f"Cumulative suffering {period} (index, billions)")
     ax.set_title("Which strategy produces less suffering?")
     ax.grid(True, axis="y", alpha=0.3)
     ax.tick_params(axis="x", rotation=20)

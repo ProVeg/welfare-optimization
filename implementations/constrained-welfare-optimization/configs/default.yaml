@@ -5,8 +5,9 @@
 
 horizon:
   t0: 2026.0          # calendar year
-  T: 2050.0           # calendar year (FAO / EAT-Lancet)
-  n_points: 241       # monthly samples for IVP output
+  T: 2050.0           # last year of the run (override to 2100 for a century path)
+  n_points: 241       # output samples for the IVP
+  fsb_year: 2050.0    # EAT-Lancet year: E must be <= E_lim from this year onward
 
 # --- Demand / headcount -------------------------------------------------
 # N is STANDING animals (Rethink Priorities broiler standing stock).
@@ -44,16 +45,28 @@ psi: 12.0             # 1; advocacy collapse rate once P > P_lim (smooth plus)
 smooth_eps: 1.0e-6    # 1; smooth-plus epsilon
 
 # --- Biophysical pressure -----------------------------------------------
-# Work in units of the ceiling so E_lim = 1. E0/E_lim ≈ 0.25 leaves room
-# that BAU / welfare-only can close (qualitative match to the essay figure).
-E0: 0.25              # 1; E / E_lim at t0
-E_lim: 1.0            # 1; livestock share of EAT-Lancet food-system allocation
+# E is livestock pressure as a *share of the livestock allocation* of the
+# EAT-Lancet 2025 food-system boundary (FSB). E_lim = 1 is that allocation,
+# not "today's impact = 25% of a future cap".
+# Current food systems are already past the FSBs (Rockström 2009; Steffen 2015;
+# Richardson et al. 2023: six of nine planetary boundaries transgressed; EAT-Lancet
+# 2025: food drives five of those). Livestock share of current food impact ≈
+# livestock share of the FSB, so livestock/allocation ≈ food/FSB:
+#   climate 16–17.7 GtCO2e / 5 Gt ≈ 3.2–3.5
+#   land    48 M km² current / 48 M km² FSB ≈ 1.0–1.09 (37% vs 34% of land)
+#   N surplus 119 / 57 TgN ≈ 2.1
+#   P to water 7.2 / 4.6 TgP ≈ 1.6
+# Composite (arithmetic mean) ≈ 2.0. Range 1.1 (land-only) to 3.4 (climate-only).
+E0: 2.0               # 1; current E / E_lim (>1 = already past the allocation)
+E_lim: 1.0            # 1; livestock allocation of the 2050 food-system ceiling
 kappa: 0.144          # 1; Wageningen 2025 land +14.4% per kg (central, not P +36.7%)
-# Ė = alpha_E * N * (1 + kappa Q) - delta_E E
-# Scaled so BAU approaches the ceiling by ~2050: alpha_E * N0 / E_lim ≈ 0.028/year
-alpha_E: 2.77e-12     # 1/(animal-year); 0.028 / N0
-delta_E: 0.02         # 1/year; slow environmental recovery (second-order)
-beta: 0.20            # 1; scarcity markup e^{beta E/E_lim} in the price ODE
+# EAT-Lancet FSBs are mostly *annual* pressures (GtCO2e/yr, Tg N/yr), not a
+# 50-year carbon stock. delta_E ~ 1/year makes E track headcount within a year.
+# Quasi-steady: alpha_E * N0 * (1+kappa Q0) / delta_E = E0.
+alpha_E: 1.952e-10    # 1/(animal-year); E0 * delta_E / (N0 (1+kappa Q0))
+delta_E: 1.0          # 1/year; flow-like pressure (land-conversion lag omitted in v1)
+# Markup is 1 at today's already-overshot E0 so P0 stays the observed price.
+beta: 0.20            # 1; scarcity markup exp(beta (E-E0)/E_lim) in the price ODE
 gamma: 0.50           # 1/year; price adjustment toward cost
 
 # --- Labor / operational ceiling ----------------------------------------

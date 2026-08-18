@@ -30,13 +30,19 @@ class DynamicsTests(unittest.TestCase):
         n_high = headcount(y, self.p.Q_ecc, self.p.P0, self.p)
         self.assertGreater(n_high, n_low)
 
-    def test_slack_positive_at_initial_condition(self) -> None:
+    def test_starts_past_biophysical_ceiling(self) -> None:
         y, q, e, price, labor = initial_state(self.p)
         sl = slack(y, q, e, price, labor, 0.0, 0.0, self.p)
-        self.assertGreater(sl["E"], 0.0)
+        self.assertLess(sl["E"], 0.0)
+        self.assertGreater(e / self.p.E_lim, 1.0)
         self.assertGreater(sl["P"], 0.0)
         self.assertGreater(sl["labor"], 0.0)
         self.assertGreater(sl["budget"], 0.0)
+
+    def test_open_loop_runs_while_over_ceiling(self) -> None:
+        tr = simulate(self.p, constant_control(0.0, 0.0), label="BAU")
+        self.assertTrue(np.all(np.isfinite(tr.E)))
+        self.assertGreater(float(tr.E[0]), self.p.E_lim)
 
     def test_rhs_finite(self) -> None:
         deriv = rhs(0.0, initial_state(self.p), 0.5, 0.5, self.p)

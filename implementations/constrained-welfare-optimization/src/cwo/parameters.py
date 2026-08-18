@@ -51,6 +51,7 @@ class Params:
     t0: float
     T: float
     n_points: int
+    fsb_year: float
     N0: float
     pi0: float
     kappa_pi: float
@@ -120,6 +121,7 @@ def params_from_mapping(raw: dict) -> Params:
         t0=float(h.get("t0", raw.get("t0"))),
         T=float(h.get("T", raw.get("T"))),
         n_points=int(h.get("n_points", raw.get("n_points", 241))),
+        fsb_year=float(h.get("fsb_year", raw.get("fsb_year", 2050.0))),
         N0=float(raw["N0"]),
         pi0=float(raw["pi0"]),
         kappa_pi=float(raw["kappa_pi"]),

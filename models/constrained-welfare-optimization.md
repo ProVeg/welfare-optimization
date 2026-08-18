@@ -223,7 +223,7 @@ r(t)\left(1 - \varepsilon \frac{P-P_0}{P_0}\right) S(P)
 \delta_E E, \\
 \dot P
 &=
-\gamma \bigl[ h(Q)\, e^{\beta E/E^{\lim}} - P \bigr], \\
+\gamma \bigl[ h(Q)\, e^{\beta (E-E_0)/E^{\lim}} - P \bigr], \\
 \dot L
 &=
 \theta_L A_W N - \delta_L L.
@@ -245,7 +245,10 @@ This is the existing five-equation system with two corrections:
 
 \[
 \begin{aligned}
-E(t) &\le E^{\lim}, \\
+E(t) &\le \max\{E^{\lim},\, 1.05\, E(t_0)\}
+\quad\text{(never worsen an already-transgressed allocation)}, \\
+E(T) &\le E^{\lim}
+\quad\text{(restore the livestock FSB by 2050, if \(E\) is flow-like)}, \\
 P(t) &\le P^{\lim}, \\
 N(t)/L(t) &\le \xi^{\lim}
 \quad\text{or equivalently}\quad
@@ -255,7 +258,7 @@ c_W u_W(t) + c_D u_D(t) &\le B(t), \\
 \end{aligned}
 \]
 
-These are **state-inequality path constraints**. When \(E = E^{\lim}\) is active, the dynamics become a DAE; the control (typically \(u_D\), which lowers \(Y\)) must keep \(\dot E \le 0\) on the boundary.
+These are **state-inequality path constraints**. Open-loop diagnostics may start with \(E(t_0) > E^{\lim}\) (current food systems already transgress the EAT-Lancet 2025 FSBs and Richardson et al. 2023 planetary boundaries). Requiring \(E(t)\le E^{\lim}\) at every \(t\) is then empty. When the 2050 restoration constraint is active, the control (typically \(u_D\)) must cut headcount so the flow-like pressure \(E\) falls through \(E^{\lim}\). The price scarcity factor is \(e^{\beta(E-E_0)/E^{\lim}}\), so \(P_0\) matches today's already-overshot state.
 
 **Stability criterion (necessary for a high-\(Q\) equilibrium inside the ceilings).** From \(\dot Y = 0\) and \(E \le E^{\lim}\):
 
@@ -303,7 +306,7 @@ This matches the repo stack (`literature/welfare-models-architecture.md`): **GEK
 ## 6. Numerical caveats
 
 - **Nonconvexity / multi-modality.** Welfare-only can look locally good on a short horizon (SADs fall while \(\alpha\) rises) and then hit \(P^{\lim}\) and collapse \(Q\) (simulation figure in `literature/welfare-simulation.png`).
-- **Stiffness.** \(\sigma(N/L)\) and the exponential scarcity \(e^{\beta E/E^{\lim}}\) can be stiff near ceilings. Implicit collocation, not explicit RK, in the loop.
+- **Stiffness.** \(\sigma(N/L)\) and the exponential scarcity \(e^{\beta (E-E_0)/E^{\lim}}\) can be stiff near ceilings. Implicit collocation, not explicit RK, in the loop.
 - **Scaling.** \(N\) is \(10^{10}\)--\(10^{11}\); \(Q \in [0,1]\); \(P/P_0 \sim 1\). Nondimensionalize (\(Y/Y_0\), \(E/E^{\lim}\), \(P/P_0\), \(L/L_0\)).
 - **Units of \(N\).** Pick either standing population or animals slaughtered per year and stay there. SADs \(\times\) standing \(\times\) \(\phi\) (per year) equals SADs \(\times\) slaughtered \(\times\) \(\phi\) (per life) only if \(\phi\) is converted by lifespan.
 - **Smoothing.** The plus function in \(A_W\) and any \(\max\) in \(\sigma\) destroy classical derivatives if left unsmoothed.
@@ -406,12 +409,12 @@ Values are **point estimate / range / trajectory / unknown**, never a single une
 - **Symbol:** \(E_k^{\lim}\)
 - **Definition:** Food-system allocation of planetary boundaries; livestock must fit inside a share of these.
 - **Units:** GtCO₂e / year; M km² agricultural land; Tg P / year; Tg N / year
-- **Point estimate:** EAT-Lancet 2025 food-system targets include climate \(\approx 5\) GtCO₂e yr\(^{-1}\) by 2050; agricultural land \(48\) M km²; P to surface water \(4.6\) Tg yr\(^{-1}\); N surplus \(57\) Tg yr\(^{-1}\). Food already drives five boundary transgressions and \(\sim 30\%\) of GHGs. Livestock uses \(\sim 83\%\) of farmland and \(56\)--\(58\%\) of food-system emissions (Poore & Nemecek 2018).
-- **Uncertainty / range:** Livestock’s *share* of the 5 Gt food budget is a modeling choice, not a measured constant. Sensitivity: livestock GHG cap from “no tighter than today” down to a proportional cut toward 5 Gt.
-- **Time development:** Ceilings are 2050 targets; path constraint can tighten linearly from 2026.
+- **Point estimate:** Food systems are **already past** the 2025 EAT-Lancet food-system boundaries (FSBs), which are the food allocation of the planetary boundaries (Rockström et al. 2009; Steffen et al. 2015; Richardson et al. 2023 — six of nine PBs transgressed; food drives five of those). Current / FSB: climate \(16\)–\(17.7\) GtCO₂e yr\(^{-1}\) vs \(5\) (\(\approx 3.2\)–\(3.5\)); agricultural land \(48\) M km² vs \(48\) (\(\approx 1.0\)–\(1.09\), 37% vs 34% of land area); N surplus \(119\) vs \(57\) Tg N (\(\approx 2.1\)); P to surface water from food \(7.2\) vs \(4.6\) Tg P (\(\approx 1.6\)). If livestock’s share of the FSB equals its share of current food impact (Poore & Nemecek: 56–58% of food emissions, 83% of farmland), livestock / livestock-allocation equals food / FSB. Composite (arithmetic mean of the four ratios) \(\approx 2.0\). The v1 scalar is therefore \(E_0/E_{\lim} = 2.0\), not \(0.25\).
+- **Uncertainty / range:** \(1.1\) (land-only) to \(3.4\) (climate-only). FAO farm-gate livestock \(4.3\) GtCO₂e (enteric + manure, excluding land-use change and feed energy) vs a 57% slice of the \(5\) Gt FSB (\(\approx 2.85\) Gt) still gives \(\approx 1.5\).
+- **Time development:** Ceilings are 2050 *targets*. Today is already over; BAU raises pressure further. Open-loop \(E(t)\) may stay \(> E_{\lim}\). The optimizer must not require \(E(t_0)\le E_{\lim}\) (infeasible); it should not worsen the overshoot and should restore \(E(T)\le E_{\lim}\).
 - **Scope:** Global food system, not livestock-only.
-- **Source:** EAT-Lancet Commission 2025; Rockström / Richardson planetary boundaries; Poore & Nemecek, *Science* 360:987 (2018).
-- **Confidence:** high that BAU livestock is outside the safe space; medium for the exact livestock quota.
+- **Source:** EAT-Lancet Commission 2025; Crona et al., *Nature Food* (2025) food-system boundaries; Rockström et al. (2009); Steffen et al. (2015); Richardson et al., *Science Advances* (2023); Poore & Nemecek, *Science* 360:987 (2018); FAO agrifood emissions 2023.
+- **Confidence:** high that livestock is already outside the safe operating space; medium on the exact composite \(2.0\) (climate-only \(\sim 3.3\), land-only \(\sim 1.1\)).
 
 ### WTP / socio-economic price ceiling
 - **Symbol:** \(P^{\lim}/P_0\)
@@ -543,9 +546,9 @@ Values are **point estimate / range / trajectory / unknown**, never a single une
 - Algebraic: \(N = Y\, S(P) / \pi(Q)\) (animals; pick standing *or* slaughter and keep it).
 
 **Constraints:**
-- Path: \(E(t) \le E^{\lim}\), \(P(t) \le P^{\lim}\), \(N(t)/L(t) \le \xi^{\lim}\).
+- Path: if \(E(t_0)\le E^{\lim}\) then \(E(t)\le E^{\lim}\) for all \(t\); if already overshot, \(E(t)\le 1.05 E(t_0)\) and \(E(T)\le E^{\lim}\). Also \(P(t)\le P^{\lim}\), \(N(t)/L(t)\le \xi^{\lim}\).
 - Control: \(c_W u_W + c_D u_D \le B(t)\), box bounds.
-- Dynamics and \(\mathbf{x}(t_0) = \mathbf{x}_0\).
+- Dynamics and \(\mathbf{x}(t_0) = \mathbf{x}_0\) with \(E_0/E^{\lim}\approx 2\) (composite current / livestock FSB).
 - Static NLP of §3 as a 2050 diagnostic (three scenarios + true min).
 
 **Dynamics:** Smoothed five-ODE system in §4.2, extending `literature/welfare-differential-equations.md`.

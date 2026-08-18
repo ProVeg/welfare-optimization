@@ -84,7 +84,7 @@ def cmd_scenarios(args: argparse.Namespace) -> Path:
     plot_trajectories(trajs, p, out / "figures" / "trajectories.png")
     plot_controls(trajs, out / "figures" / "controls.png")
     plot_slack(trajs, out / "figures" / "slack.png")
-    plot_sad_bars(trajs, out / "figures" / "sad_bars.png")
+    plot_sad_bars(trajs, out / "figures" / "sad_bars.png", p)
     write_report(out / "report.md", p, trajs, None, static_rows, ["Open-loop scenarios only."])
     print(f"Wrote {out}")
     return out
@@ -107,11 +107,15 @@ def cmd_optimize(args: argparse.Namespace) -> Path:
     plot_trajectories(all_trajs, p, out / "figures" / "trajectories.png")
     plot_controls(all_trajs, out / "figures" / "controls.png")
     plot_slack(all_trajs, out / "figures" / "slack.png")
-    plot_sad_bars(all_trajs, out / "figures" / "sad_bars.png")
+    plot_sad_bars(all_trajs, out / "figures" / "sad_bars.png", p)
     notes = [
         f"Optimizer {opt.solver}: {opt.message}",
         "Path constraints are inequalities (states may sit below ceilings).",
     ]
+    if p.T > p.fsb_year + 0.5:
+        notes.append(
+            f"Horizon extended to {p.T:.0f}; livestock must be at or under its food-system allocation from {p.fsb_year:.0f}."
+        )
     write_report(out / "report.md", p, all_trajs, opt, static_rows, notes)
     print(f"Wrote {out}")
     return out
@@ -125,7 +129,7 @@ def cmd_sensitivity(args: argparse.Namespace) -> Path:
     rows, baseline = run_tornado(raw, p, spec)
     _write_common(out, raw, trajs, {"tornado": rows, "baseline_joint_J": baseline})
     plot_trajectories(trajs, p, out / "figures" / "trajectories.png")
-    plot_sad_bars(trajs, out / "figures" / "sad_bars.png")
+    plot_sad_bars(trajs, out / "figures" / "sad_bars.png", p)
     plot_tornado(rows, baseline, out / "figures" / "tornado.png")
     static_rows = diagnostics(p)
     notes = ["Tornado uses the constant joint diagnostic, not a re-optimized policy."]
