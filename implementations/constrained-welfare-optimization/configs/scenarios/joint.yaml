@@ -1,0 +1,6 @@
+# Joint diagnostic (constant interior mix). Not the optimized policy.
+label: Joint (constant)
+u_W: 0.7
+u_D: 0.7
+color: "#1b9e77"
+linestyle: "-"

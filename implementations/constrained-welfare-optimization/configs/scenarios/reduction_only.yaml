@@ -1,0 +1,6 @@
+# Demand reduction only: no welfare-standard campaigns.
+label: Reduction-only
+u_W: 0.0
+u_D: 1.0
+color: "#7570b3"
+linestyle: ":"

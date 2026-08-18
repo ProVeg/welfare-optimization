@@ -1,0 +1,23 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "cwo"
+version = "0.1.0"
+description = "Constrained optimization of farmed-animal welfare (SAD-minimizing ODE NLP)"
+requires-python = ">=3.10"
+dependencies = [
+    "numpy",
+    "scipy",
+    "matplotlib",
+    "pyyaml",
+    "pandas",
+    "gekko",
+]
+
+[project.scripts]
+cwo = "cwo.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]

@@ -1,0 +1,23 @@
+# One-at-a-time tornado around default.yaml. Each entry is a low/high pair.
+# Metric: cumulative SADs of the joint constant-control diagnostic.
+parameters:
+  lambda_D:
+    low: 0.0
+    high: 0.06
+    label: "Demand-reduction rate"
+  P_lim:
+    low: 1.08
+    high: 1.30
+    label: "Price ceiling (WTP)"
+  phi_hw:
+    low: 0.4
+    high: 0.8
+    label: "High-welfare SAD rate"
+  kappa:
+    low: 0.11
+    high: 0.367
+    label: "Welfare footprint penalty"
+  r:
+    low: 0.007
+    high: 0.018
+    label: "BAU demand growth"

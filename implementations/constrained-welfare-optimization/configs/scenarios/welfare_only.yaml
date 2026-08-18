@@ -1,0 +1,6 @@
+# Welfare reform only: full campaign intensity, no demand reduction.
+label: Welfare-only
+u_W: 1.0
+u_D: 0.0
+color: "#d95f02"
+linestyle: "--"

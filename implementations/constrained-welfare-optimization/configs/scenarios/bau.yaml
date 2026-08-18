@@ -1,0 +1,6 @@
+# Business-as-usual: no extra welfare campaigns, no extra demand reduction.
+label: BAU
+u_W: 0.0
+u_D: 0.0
+color: "#4d4d4d"
+linestyle: "-"

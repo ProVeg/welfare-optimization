@@ -1,0 +1,88 @@
+# Central calibration for the aggregate small-bodied (poultry-like) model.
+# Empirical point estimates follow models/constrained-welfare-optimization.md §7.
+# Rates tagged calibration: true are not measurements; they are set so the
+# open-loop diagnostics behave as described in that document.
+
+horizon:
+  t0: 2026.0          # calendar year
+  T: 2050.0           # calendar year (FAO / EAT-Lancet)
+  n_points: 241       # monthly samples for IVP output
+
+# --- Demand / headcount -------------------------------------------------
+# N is STANDING animals (Rethink Priorities broiler standing stock).
+N0: 1.01e10           # animals; McKay & Shah 2025, broilers standing 2023
+# Edible output per standing animal-year at Q=0.
+# 76.2e9 slaughtered/year * ~1.6 kg / 10.1e9 standing ≈ 12.1 kg / animal-year
+pi0: 12.1             # kg edible / standing-animal-year
+# π(Q) = pi0 / (1 + kappa_pi Q). ECC land +14.4% as a productivity proxy
+# at Q = Q_ecc: 1 + kappa_pi Q_ecc = 1.144 → kappa_pi ≈ 0.288
+kappa_pi: 0.288       # 1; Wageningen 2025 land markup via Q_ecc=0.5
+r: 0.011              # 1/year; OECD-FAO ~1.0–1.2%/year meat tonnage
+epsilon: 0.6          # 1; Andreyeva et al. 2010 poultry |elasticity| 0.68, essay 0.4–0.7
+# Species replacement S(P) = 1 + s_coeff * (P - P0) / P0  (C^1)
+s_coeff: 0.2          # 1; 20% price rise → 20% more small-bodied headcount (sensitivity)
+
+# --- Quality / SADs -----------------------------------------------------
+Q0: 0.10              # 1; conventional-dominant start
+Q_max: 1.0            # 1; industrial-scale welfare ceiling
+Q_ecc: 0.50           # 1; ECC-like mid reform (not a "good life")
+# SAD intensity: chicken-equivalent units (omega = 1). Absolute level is an
+# index; the ratio is the midpoint of the §7 sensitivity band [0.4, 0.8].
+omega: 1.0            # chicken-equivalent welfare-range weight
+phi_conv: 1.0         # SAD / animal-year (index, not a measured global total)
+phi_hw: 0.6           # SAD / animal-year; midpoint of [0.4, 0.8] band
+rho: 0.0              # 1/year; undiscounted SADs
+
+# --- Prices / WTP -------------------------------------------------------
+P0: 1.0               # price index at t0
+P_lim: 1.15           # WTP mass-market ceiling; Limits to Welfare 10–15%
+# h(Q) = P0 * exp(h_exp * Q), h(Q_ecc) = 1.19 P0 (Wageningen ECC +19%)
+# h_exp = ln(1.19) / Q_ecc
+h_exp: 0.347          # 1; ln(1.19)/0.50
+h_ecc: 1.19           # used in the static NLP; Wageningen 2025 after processing
+psi: 12.0             # 1; advocacy collapse rate once P > P_lim (smooth plus)
+smooth_eps: 1.0e-6    # 1; smooth-plus epsilon
+
+# --- Biophysical pressure -----------------------------------------------
+# Work in units of the ceiling so E_lim = 1. E0/E_lim ≈ 0.25 leaves room
+# that BAU / welfare-only can close (qualitative match to the essay figure).
+E0: 0.25              # 1; E / E_lim at t0
+E_lim: 1.0            # 1; livestock share of EAT-Lancet food-system allocation
+kappa: 0.144          # 1; Wageningen 2025 land +14.4% per kg (central, not P +36.7%)
+# Ė = alpha_E * N * (1 + kappa Q) - delta_E E
+# Scaled so BAU approaches the ceiling by ~2050: alpha_E * N0 / E_lim ≈ 0.028/year
+alpha_E: 2.77e-12     # 1/(animal-year); 0.028 / N0
+delta_E: 0.02         # 1/year; slow environmental recovery (second-order)
+beta: 0.20            # 1; scarcity markup e^{beta E/E_lim} in the price ODE
+gamma: 0.50           # 1/year; price adjustment toward cost
+
+# --- Labor / operational ceiling ----------------------------------------
+# L0 normalized so N0/L0 is the current animal-to-staff ratio.
+L0: 1.0               # FTE index
+# ξ_lim set ~25% above today's ratio so BAU growth approaches failure
+# (Limits to Welfare: current industrial scale already near operational failure).
+xi_lim: 1.2625e10     # animals / FTE-index; 1.25 * N0
+xi_star: 1.515e10     # animals / FTE-index; Hill midpoint 1.5 * N0 (calibration)
+sigma0: 0.35          # 1/year; max operational failure drain on Q (calibration)
+sigma_p: 6            # 1; Hill exponent
+delta_L: 0.02         # 1/year; high-income agricultural workforce decline
+theta_L: 2.0e-13      # FTE-index / (animal-year); weak hiring vs headcount (calibration)
+
+# --- Controls (unknown campaign production functions; calibration) ------
+# lambda_D: u_D=1 produces ~4%/year extra demand decay (essay joint-strategy sketch).
+lambda_D: 0.04        # 1/year; calibration: true
+# eta_W: u_W=1, u_D=0 can raise Q toward ECC in 5–10 years before ceilings bind.
+eta_W: 0.25           # 1/year; calibration: true
+c_W: 1.0              # budget units per unit u_W
+c_D: 1.0              # budget units per unit u_D
+# B=2 allows (u_W,u_D)=(1,1): "what mix is required" not "what mix is affordable".
+B: 2.0                # budget units / year
+
+# --- Solver -------------------------------------------------------------
+ivp_method: BDF
+ivp_rtol: 1.0e-6
+ivp_atol: 1.0e-8
+ocp_nodes: 41         # collocation mesh (years sampled)
+ocp_max_iter: 200
+slsqp_pieces: 10      # piecewise-constant fallback intervals
+static_alpha_max_k: 2.0  # α <= 1 - exp(-k u_W) in the static NLP
