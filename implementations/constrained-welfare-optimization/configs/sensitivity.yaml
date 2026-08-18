@@ -21,3 +21,19 @@ parameters:
     low: 0.007
     high: 0.018
     label: "BAU demand growth"
+  N_rho_over_N0:
+    low: 0.70
+    high: 1.00
+    label: "Density-relief threshold"
+  eta_rho:
+    low: 0.0
+    high: 0.16
+    label: "Density-relief speed"
+  N_delta_over_N0:
+    low: 0.50
+    high: 1.00
+    label: "Delicacy-price threshold"
+  nu_P:
+    low: 0.0
+    high: 0.50
+    label: "Delicacy-price exponent"

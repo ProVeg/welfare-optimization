@@ -132,7 +132,10 @@ def cmd_sensitivity(args: argparse.Namespace) -> Path:
     plot_sad_bars(trajs, out / "figures" / "sad_bars.png", p)
     plot_tornado(rows, baseline, out / "figures" / "tornado.png")
     static_rows = diagnostics(p)
-    notes = ["Tornado uses the constant joint diagnostic, not a re-optimized policy."]
+    notes = [
+        "Tornado uses the constant joint diagnostic, not a re-optimized policy.",
+        "Bars for density-relief and delicacy parameters test the new quality/price channels.",
+    ]
     write_report(out / "report.md", p, trajs, None, static_rows, notes)
     print(f"Wrote {out}")
     return out
