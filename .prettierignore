@@ -1,0 +1,5 @@
+# Markdown files in this repo mix LaTeX (\(...\), \[...\], bare _subscripts_) with prose.
+# Prettier's markdown printer treats bare "_" as CommonMark emphasis and rewrites it
+# (e.g. \pi_{s,conv} -> \pi*{s,conv}), silently corrupting the math. Keep Prettier off
+# Markdown entirely rather than trying to selectively allow it.
+*.md

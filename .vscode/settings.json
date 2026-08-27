@@ -1,0 +1,6 @@
+{
+  "mdmath.delimiters": "brackets",
+  "[markdown]": {
+    "editor.formatOnSave": false
+  }
+}
