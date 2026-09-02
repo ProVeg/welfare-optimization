@@ -59,57 +59,57 @@ The static problem is a restriction of the dynamic one (constant controls, ignor
 
 | Symbol               | Meaning                                                       | Domain               | Units            |
 | -------------------- | ------------------------------------------------------------- | -------------------- | ---------------- |
-| \(Y_s\)              | Animal-source **output** of species \(s\) in 2050             | \(\mathbb{R}\_{>0}\) | kg edible / year |
+| \(Y_s\)              | Animal-source **output** of species \(s\) in 2050             | \(\mathbb{R}_{>0}\) | kg edible / year |
 | \(\alpha_s\)         | Share of \(Y_s\) produced under a high-welfare protocol       | \([0,1]\)            | dimensionless    |
-| \(u*{W,s}, u*{D,s}\) | Campaign effort (optional; or use \(Y,\alpha\) as primitives) | \([0,1]\)            | dimensionless    |
+| \(u_{W,s}, u_{D,s}\) | Campaign effort (optional; or use \(Y,\alpha\) as primitives) | \([0,1]\)            | dimensionless    |
 
 Species index \(s \in \mathcal{S} = \{\text{broiler},\ \text{layer},\ \text{pig},\ \text{cattle},\ \text{finfish}\}\). Shrimp and farmed insects are an extension (§8).
 
 Headcount is **derived**, not chosen. Demand is for kilograms, not animals:
 
 \[
-N*s \;=\; Y_s \left( \frac{1-\alpha_s}{\pi*{s,\mathrm{conv}}} + \frac{\alpha*s}{\pi*{s,\mathrm{hw}}} \right),
+N_s \;=\; Y_s \left( \frac{1-\alpha_s}{\pi_{s,\mathrm{conv}}} + \frac{\alpha_s}{\pi_{s,\mathrm{hw}}} \right),
 \]
 
-where \(\pi*{s,\cdot}\) is edible kilograms per animal-year (or per animal slaughtered, consistently). Because \(\pi*{s,\mathrm{hw}} < \pi\_{s,\mathrm{conv}}\) (slower growth, lower density, higher layer mortality), raising \(\alpha_s\) at fixed \(Y_s\) **increases** \(N_s\). This is the productivity trade-off in _Limits to Welfare_ §5 and Martinic et al. (2026).
+where \(\pi_{s,\cdot}\) is edible kilograms per animal-year (or per animal slaughtered, consistently). Because \(\pi_{s,\mathrm{hw}} < \pi_{s,\mathrm{conv}}\) (slower growth, lower density, higher layer mortality), raising \(\alpha_s\) at fixed \(Y_s\) **increases** \(N_s\). This is the productivity trade-off in _Limits to Welfare_ §5 and Martinic et al. (2026).
 
 ### 3.2 Single objective
 
-Let \(\varphi*{s,\mathrm{conv}}, \varphi*{s,\mathrm{hw}}\) be SAD rates per animal-year (or per slaughtered animal × lifespan, consistently). Total SADs in the snapshot year:
+Let \(\varphi_{s,\mathrm{conv}}, \varphi_{s,\mathrm{hw}}\) be SAD rates per animal-year (or per slaughtered animal × lifespan, consistently). Total SADs in the snapshot year:
 
 \[
-J*{\mathrm{static}}(Y,\alpha)
+J_{\mathrm{static}}(Y,\alpha)
 \;=\;
-\sum*{s\in\mathcal{S}}
-\omega*s\, N_s
-\bigl[(1-\alpha_s)\,\varphi*{s,\mathrm{conv}} + \alpha*s\,\varphi*{s,\mathrm{hw}}\bigr].
+\sum_{s\in\mathcal{S}}
+\omega_s\, N_s
+\bigl[(1-\alpha_s)\,\varphi_{s,\mathrm{conv}} + \alpha_s\,\varphi_{s,\mathrm{hw}}\bigr].
 \]
 
 \(\omega_s\) is a species welfare-range weight (Rethink Priorities mixture; chicken 50th percentile \(0.332\) relative to human \(=1\)). If \(\varphi\) is already in SADs, \(\omega_s\) is absorbed in \(\varphi\).
 
-**Minimize** \(J\_{\mathrm{static}}\). Optional signed-welfare variant (not the default): replace \(\varphi\) by \(\varphi - \varphi^\dagger\) with a neutrality threshold; default is that conventional and ECC/cage-free lives remain net-negative (_Limits to Welfare_ §8).
+**Minimize** \(J_{\mathrm{static}}\). Optional signed-welfare variant (not the default): replace \(\varphi\) by \(\varphi - \varphi^\dagger\) with a neutrality threshold; default is that conventional and ECC/cage-free lives remain net-negative (_Limits to Welfare_ §8).
 
 ### 3.3 Constraints
 
 **Biophysical (vector).** For impact \(k \in \{\mathrm{GHG},\ \mathrm{land},\ \mathrm{P},\ \mathrm{N},\ \mathrm{water}\}\):
 
 \[
-\sum*{s\in\mathcal{S}} Y_s
-\bigl[(1-\alpha_s)\, e*{s,k}^{\mathrm{conv}} + \alpha*s\, e*{s,k}^{\mathrm{hw}}\bigr]
+\sum_{s\in\mathcal{S}} Y_s
+\bigl[(1-\alpha_s)\, e_{s,k}^{\mathrm{conv}} + \alpha_s\, e_{s,k}^{\mathrm{hw}}\bigr]
 \;\le\;
 E_k^{\lim}.
 \]
 
-Here \(e\_{s,k}\) is impact per kilogram (Poore & Nemecek 2018 baseline; Wageningen 2025 / Martinic 2026 welfare markups). \(E_k^{\lim}\) is the livestock share of the EAT-Lancet 2025 food-system boundary.
+Here \(e_{s,k}\) is impact per kilogram (Poore & Nemecek 2018 baseline; Wageningen 2025 / Martinic 2026 welfare markups). \(E_k^{\lim}\) is the livestock share of the EAT-Lancet 2025 food-system boundary.
 
 **Socio-economic.** Relative retail price of species \(s\):
 
 \[
-\frac{P*s}{P*{s,0}}
+\frac{P_s}{P_{s,0}}
 \;=\;
-(1-\alpha*s) + \alpha_s\, h_s
+(1-\alpha_s) + \alpha_s\, h_s
 \;\le\;
-P_s^{\lim}/P*{s,0},
+P_s^{\lim}/P_{s,0},
 \]
 
 with \(h_s > 1\) the high-welfare cost multiplier (ECC \(\approx 1.19\)). If a single meat-basket price is preferred:
@@ -131,27 +131,31 @@ P \;=\; \sum_s \nu_s P_s \;\le\; P^{\lim},
 **Demand and budget.**
 
 \[
-Y*s \;=\; Y*{s,\mathrm{BAU}} \left(1 - \delta*s(u_D)\right)
-\left(1 - \varepsilon_s \frac{P_s - P*{s,0}}{P\_{s,0}}\right)
+Y_s \;=\; Y_{s,\mathrm{BAU}} \left(1 - \delta_s(u_D)\right)
+\left(1 - \varepsilon_s \frac{P_s - P_{s,0}}{P_{s,0}}\right)
 S_s(P),
 \]
 
+**Unit annual advocacy budget.** \(B\) is normalized to exactly one advocacy-budget unit per year, \(B \equiv 1\): the planner's entire incremental capacity for farmed-animal-welfare intervention that year, whatever that capacity really is in dollars. \(u_{W,s}, u_{D,s}\) are then the *share* of that unit spent on welfare-standard campaigns and on demand-reduction campaigns for species \(s\), and
+
 \[
-\sum*s \bigl( c*{W,s} u*{W,s} + c*{D,s} u*{D,s} \bigr) \;\le\; B,
+\sum_s \bigl( c_{W,s} u_{W,s} + c_{D,s} u_{D,s} \bigr) \;\le\; 1,
 \quad
-0 \le u*{W,s}, u\_{D,s} \le 1.
+u_{W,s}, u_{D,s} \ge 0,
 \]
 
-\(S*s(P)\) is a species-replacement map: when large-bodied prices rise, \(S*{\mathrm{broiler}}, S\_{\mathrm{finfish}}\) increase (_Limits to Welfare_ §4; welfare-efficiency paradox). \(\delta_s(u_D)\) is demand reduced (Global North) or growth prevented (Global South) as a function of effort.
+is a genuine allocation constraint: the two levers draw on the same fixed pool, so spending more on one leaves strictly less for the other — this is what makes the model actually **weigh** welfare-campaign effort against demand-reduction effort, rather than let both run at full intensity for free. \(c_{W,s}, c_{D,s} > 0\) are the *relative* cost of one unit of campaign intensity for species \(s\) in each lever (default \(c_{W,s}=c_{D,s}=1\): equal cost per unit intensity — no evidence yet that one lever is intrinsically cheaper per unit of the intensity defined here). The old independent box bounds \(0\le u_{W,s},u_{D,s}\le 1\) are now implied whenever \(c_{W,s},c_{D,s}\ge 1\); keep them explicit only if a relative cost could fall below 1.
 
-**Attainable welfare share.** \(\alpha*s \le a_s(u*{W,s})\), with \(a_s\) concave (diminishing campaign returns).
+\(S_s(P)\) is a species-replacement map: when large-bodied prices rise, \(S_{\mathrm{broiler}}, S_{\mathrm{finfish}}\) increase (_Limits to Welfare_ §4; welfare-efficiency paradox). \(\delta_s(u_D)\) is demand reduced (Global North) or growth prevented (Global South) as a function of effort.
+
+**Attainable welfare share.** \(\alpha_s \le a_s(u_{W,s})\), with \(a_s\) concave (diminishing campaign returns).
 
 ### 3.4 Compact form
 
 \[
 \begin{aligned}
-\min*{Y,\alpha,u}\quad
-& J*{\mathrm{static}}(Y,\alpha) \\
+\min_{Y,\alpha,u}\quad
+& J_{\mathrm{static}}(Y,\alpha) \\
 \text{s.t.}\quad
 & g_k(Y,\alpha) \le 0, \quad k \in \mathcal{K} \quad \text{(biophysical, price, labor, budget)}, \\
 & Y = \Gamma(u_D, P(\alpha)), \quad
@@ -160,7 +164,7 @@ S_s(P),
 \end{aligned}
 \]
 
-\(\mathcal{X}\) is a compact box, \(J*{\mathrm{static}}\) is continuous, constraint set closed. A minimizer exists if the feasible set is nonempty (Weierstrass). Feasibility can fail if \(Y*{\mathrm{BAU}}\) already violates \(E^{\lim}\) at \(\alpha = 0\); then some \(u_D > 0\) is **necessary** for existence, which is the static form of the stability criterion in the ODE note.
+\(\mathcal{X}\) is a compact box, \(J_{\mathrm{static}}\) is continuous, constraint set closed. A minimizer exists if the feasible set is nonempty (Weierstrass). Feasibility can fail if \(Y_{\mathrm{BAU}}\) already violates \(E^{\lim}\) at \(\alpha = 0\); then some \(u_D > 0\) is **necessary** for existence, which is the static form of the stability criterion in the ODE note.
 
 ### 3.5 Diagnostic: three scenarios (_Limits to Welfare_ §6)
 
@@ -168,11 +172,11 @@ These are **not** optima; they are feasible-set probes.
 
 | Scenario       | Controls                   | Typical binding constraints                                                                           |
 | -------------- | -------------------------- | ----------------------------------------------------------------------------------------------------- |
-| Welfare-only   | \(u_D = 0\), \(u_W\) large | \(P \le P^{\lim}\) and/or \(E \le E^{\lim}\) cap \(\alpha\); \(N\) follows BAU (plus \(\pi\) penalty) |
-| Reduction-only | \(u_W = 0\), \(u_D\) large | \(\alpha\) stuck at baseline; \(E,P\) slack                                                           |
-| Joint          | both free                  | \(\alpha\) can rise because \(Y\) (hence \(E,P,N/L\)) has been lowered                                |
+| Welfare-only   | \(u_D = 0\), \(u_W = 1\) (whole unit budget) | \(P \le P^{\lim}\) and/or \(E \le E^{\lim}\) cap \(\alpha\); \(N\) follows BAU (plus \(\pi\) penalty) |
+| Reduction-only | \(u_W = 0\), \(u_D = 1\) (whole unit budget) | \(\alpha\) stuck at baseline; \(E,P\) slack                                                           |
+| Joint          | \(u_W + u_D \le 1\), split (e.g. \(0.5,0.5\)) | \(\alpha\) can rise because \(Y\) (hence \(E,P,N/L\)) has been lowered                                |
 
-The Gemini sketch in `literature/pdf/` is this diagnostic with a scalar \(\alpha\), scalar \(H\), and \(\bar s = 1 - 0.40\alpha\). Keep it as a communication device; do not use its blended \(r\_{\mathrm{hw}} = 1.345\) as a scientific point estimate (that number is not in Wageningen or Martinic).
+The Gemini sketch in `literature/pdf/` is this diagnostic with a scalar \(\alpha\), scalar \(H\), and \(\bar s = 1 - 0.40\alpha\). Keep it as a communication device; do not use its blended \(r_{\mathrm{hw}} = 1.345\) as a scientific point estimate (that number is not in Wageningen or Martinic).
 
 ---
 
@@ -190,12 +194,12 @@ For a first implementation, treat one aggregate “small-bodied” composite (po
 
 Controls \(u(t) = \bigl(u_W(t), u_D(t)\bigr) \in \mathcal{U} = [0,1]^2\), measurable.
 
-SAD rate per animal-year \(\phi\bigl(Q\bigr)\), strictly decreasing, \(\phi(0) = \varphi*{\mathrm{conv}}\), \(\phi(Q*{\mathrm{ECC}}) = \varphi\_{\mathrm{hw}}\). Default interpolant: linear in \(Q\). Cumulative objective (Bolza):
+SAD rate per animal-year \(\phi\bigl(Q\bigr)\), strictly decreasing, \(\phi(0) = \varphi_{\mathrm{conv}}\), \(\phi(Q_{\mathrm{ECC}}) = \varphi_{\mathrm{hw}}\). Default interpolant: linear in \(Q\). Cumulative objective (Bolza):
 
 \[
 J[u]
 \;=\;
-\int\_{t_0}^{T} e^{-\rho t}\, \omega\, N(t)\, \phi\bigl(Q(t)\bigr)\, dt
+\int_{t_0}^{T} e^{-\rho t}\, \omega\, N(t)\, \phi\bigl(Q(t)\bigr)\, dt
 \;+\;
 e^{-\rho T}\, \Psi\bigl(\mathbf{x}(T)\bigr).
 \]
@@ -204,7 +208,7 @@ Default \(\rho = 0\) (undiscounted SADs, matching “total SADs to 2050”). Ter
 
 ### 4.2 Dynamics
 
-Let \(A*W(t) = u_W(t)\, \exp\bigl(-\psi (P(t) - P^{\lim})*+\bigr)\) (advocacy collapses past the WTP ceiling).
+Let \(A_W(t) = u_W(t)\, \exp\bigl(-\psi (P(t) - P^{\lim})_+\bigr)\) (advocacy collapses past the WTP ceiling).
 
 \[
 \begin{aligned}
@@ -217,19 +221,19 @@ r(t)\left(1 - \varepsilon \frac{P-P_0}{P_0}\right) S(P)
 \right] Y, \\
 \dot Q
 &=
-\eta*W A_W \,(Q*{\max} - Q)
+\eta_W A_W \,(Q_{\max} - Q)
 \;+\;
-\eta*{\rho}\, \bigl(1 - N/N*{\rho}\bigr)_+ (Q_{\max} - Q)
+\eta_{\rho}\, \bigl(1 - N/N_{\rho}\bigr)_+ (Q_{\max} - Q)
 \;-\;
 \sigma\!\left(\frac{N}{L}\right) Q, \\
 \dot E
 &=
-\alpha*E\, N \bigl(1 + \kappa Q\bigr)
+\alpha_E\, N \bigl(1 + \kappa Q\bigr)
 \;-\;
 \delta_E E, \\
 \dot P
 &=
-\gamma \bigl[ h(Q)\, e^{\beta (E-E_0)/E^{\lim}}\, \bigl(N*{\delta}/\min\{N,N\_{\delta}\}\bigr)^{\nu} - P \bigr], \\
+\gamma \bigl[ h(Q)\, e^{\beta (E-E_0)/E^{\lim}}\, \bigl(N_{\delta}/\min\{N,N_{\delta}\}\bigr)^{\nu} - P \bigr], \\
 \dot L
 &=
 \theta_L A_W N - \delta_L L.
@@ -239,15 +243,15 @@ r(t)\left(1 - \varepsilon \frac{P-P_0}{P_0}\right) S(P)
 This is the existing five-equation system with two corrections:
 
 1. **Demand \(Y\) vs headcount \(N\).** \(N = Y\, S(P)/\pi(Q)\). The old \(\dot N\) equation mixed demand growth with substitution; those now sit in \(\dot Y\) and in the map \(N(Y,Q,P)\).
-2. **Controls are explicit.** \(\lambda\_{\mathrm{DR}}(t) = \lambda_D u_D(t)\), \(A_W(t)\) as above. The planner chooses \(u\), not the exogenous paths.
-3. **Density relief (threshold).** \(\bigl(1-N/N*{\rho}\bigr)*+\) is zero at today's headcount. It turns on only after \(N\) falls far enough that leftover housing/land is used as lower stocking density rather than mothballed sheds (Dawkins et al. 2004: density bites mainly at very high kg/m²; Buijs et al. 2009: no single density cliff; Waterhouse 1996: cutting stock without keeping care inputs does not raise performance). This is _enabling_ space for \(Q\), not an automatic good life. Labor failure \(\sigma(N/L)\) still dominates if staff are cut with the herd.
-4. **Delicacy / residual-luxury price.** \(\bigl(N*{\delta}/\min\{N,N*{\delta}\}\bigr)^{\nu}\) is 1 until \(N<N\_{\delta}\). Below that, remaining meat carries a quantity premium (inverse-demand / selection of high-WTP buyers; Lusk and Tonsor 2016: meat demand more inelastic at higher prices; livestock price tracking demand–supply imbalance, Dieci et al. arXiv:1803.05404). This is **not** the shift of the demand curve from \(u_D\): a pure demand campaign would _lower_ \(P\). The extra factor is farm exit plus remaining consumption as a luxury. Keep \(\nu \ll 1/\varepsilon\) so a 50% headcount cut is a modest premium, not a \(2^{1/\varepsilon}\) spike.
+2. **Controls are explicit.** \(\lambda_{\mathrm{DR}}(t) = \lambda_D u_D(t)\), \(A_W(t)\) as above. The planner chooses \(u\), not the exogenous paths.
+3. **Density relief (threshold).** \(\bigl(1-N/N_{\rho}\bigr)_+\) is zero at today's headcount. It turns on only after \(N\) falls far enough that leftover housing/land is used as lower stocking density rather than mothballed sheds (Dawkins et al. 2004: density bites mainly at very high kg/m²; Buijs et al. 2009: no single density cliff; Waterhouse 1996: cutting stock without keeping care inputs does not raise performance). This is _enabling_ space for \(Q\), not an automatic good life. Labor failure \(\sigma(N/L)\) still dominates if staff are cut with the herd.
+4. **Delicacy / residual-luxury price.** \(\bigl(N_{\delta}/\min\{N,N_{\delta}\}\bigr)^{\nu}\) is 1 until \(N<N_{\delta}\). Below that, remaining meat carries a quantity premium (inverse-demand / selection of high-WTP buyers; Lusk and Tonsor 2016: meat demand more inelastic at higher prices; livestock price tracking demand–supply imbalance, Dieci et al. arXiv:1803.05404). This is **not** the shift of the demand curve from \(u_D\): a pure demand campaign would _lower_ \(P\). The extra factor is farm exit plus remaining consumption as a luxury. Keep \(\nu \ll 1/\varepsilon\) so a 50% headcount cut is a modest premium, not a \(2^{1/\varepsilon}\) spike.
 
-**Regularity (required for the NLP transcription).** Replace \((x)_+\) by a smooth plus \(\frac12\bigl(x + \sqrt{x^2+\epsilon}\bigr)\), \(\epsilon \sim 10^{-6}\). Take \(\sigma(\xi) = \sigma_0 \xi^p / (\xi_\star^p + \xi^p)\) (smooth saturating failure rate), \(p \ge 2\). Take \(h \in C^2\), \(h' > 0\), \(h'' \ge 0\), \(h(0) = P*0\). Take \(\pi(Q) = \pi_0 / (1 + \kappa*\pi Q)\) with \(\kappa\_\pi > 0\). Then the vector field is \(C^1\) on a neighborhood of the positive orthant, hence locally Lipschitz: IVPs are unique.
+**Regularity (required for the NLP transcription).** Replace \((x)_+\) by a smooth plus \(\frac12\bigl(x + \sqrt{x^2+\epsilon}\bigr)\), \(\epsilon \sim 10^{-6}\). Take \(\sigma(\xi) = \sigma_0 \xi^p / (\xi_\star^p + \xi^p)\) (smooth saturating failure rate), \(p \ge 2\). Take \(h \in C^2\), \(h' > 0\), \(h'' \ge 0\), \(h(0) = P_0\). Take \(\pi(Q) = \pi_0 / (1 + \kappa_\pi Q)\) with \(\kappa_\pi > 0\). Then the vector field is \(C^1\) on a neighborhood of the positive orthant, hence locally Lipschitz: IVPs are unique.
 
-**Initial conditions** \(\mathbf{x}(t_0) = \mathbf{x}\_0\) from the parameter block (§7).
+**Initial conditions** \(\mathbf{x}(t_0) = \mathbf{x}_0\) from the parameter block (§7).
 
-**Invariants / bounds.** \(Y,Q,E,P,L > 0\), \(Q(t) \in [0, Q_{\max}]\). The \((Q*{\max}-Q)\) factor and \(\sigma \ge 0\) keep \(Q\) in range if \(Q(t_0) \in [0,Q*{\max}]\).
+**Invariants / bounds.** \(Y,Q,E,P,L > 0\), \(Q(t) \in [0, Q_{\max}]\). The \((Q_{\max}-Q)\) factor and \(\sigma \ge 0\) keep \(Q\) in range if \(Q(t_0) \in [0,Q_{\max}]\).
 
 ### 4.3 Path and control constraints
 
@@ -261,12 +265,12 @@ P(t) &\le P^{\lim}, \\
 N(t)/L(t) &\le \xi^{\lim}
 \quad\text{or equivalently}\quad
 \sigma(N/L) \le \sigma^{\lim}, \\
-c_W u_W(t) + c_D u_D(t) &\le B(t), \\
-0 \le u_W(t), u_D(t) &\le 1.
+c_W u_W(t) + c_D u_D(t) &\le 1, \\
+u_W(t), u_D(t) &\ge 0.
 \end{aligned}
 \]
 
-These are **state-inequality path constraints**. Open-loop diagnostics may start with \(E(t_0) > E^{\lim}\) (current food systems already transgress the EAT-Lancet 2025 FSBs and Richardson et al. 2023 planetary boundaries). Requiring \(E(t)\le E^{\lim}\) at every \(t\) is then empty. When the 2050 restoration constraint is active, the control (typically \(u_D\)) must cut headcount so the flow-like pressure \(E\) falls through \(E^{\lim}\). The price scarcity factor is \(e^{\beta(E-E_0)/E^{\lim}}\), so \(P_0\) matches today's already-overshot state.
+These are **state-inequality path constraints**. \(B(t) \equiv 1\) is the unit annual advocacy budget (§3.3): one advocacy-budget unit per year, however large that is in real dollars, shared between the two levers. The old box bounds \(0\le u_W,u_D\le 1\) are implied by the budget constraint whenever \(c_W,c_D \ge 1\) (default). Open-loop diagnostics may start with \(E(t_0) > E^{\lim}\) (current food systems already transgress the EAT-Lancet 2025 FSBs and Richardson et al. 2023 planetary boundaries). Requiring \(E(t)\le E^{\lim}\) at every \(t\) is then empty. When the 2050 restoration constraint is active, the control (typically \(u_D\)) must cut headcount so the flow-like pressure \(E\) falls through \(E^{\lim}\). The price scarcity factor is \(e^{\beta(E-E_0)/E^{\lim}}\), so \(P_0\) matches today's already-overshot state.
 
 **Stability criterion (necessary for a high-\(Q\) equilibrium inside the ceilings).** From \(\dot Y = 0\) and \(E \le E^{\lim}\):
 
@@ -277,6 +281,8 @@ r(t)\left(1 - \varepsilon \frac{P-P_0}{P_0}\right) S(P)
 \quad\text{and}\quad
 \frac{Y}{\pi(Q)} (1+\kappa Q) \;\lesssim\; E^{\lim}.
 \]
+
+**Corollary (the trade-off the model exists to show).** Under the unit budget, \(u_D \le (1 - c_W u_W)/c_D\): pushing \(u_W\) toward 1 mechanically shrinks the demand-reduction budget available to satisfy the stability criterion above. Welfare campaigns and demand reduction are therefore in explicit competition for the same annual resource, not only for the same physical ceilings — a welfare-only strategy (\(u_W=1\)) forces \(u_D=0\) and, by the stability criterion, forecloses any interior high-\(Q\) equilibrium inside \(E\le E^{\lim}\) whenever \(r>0\).
 
 If \(u_D \equiv 0\) and \(r > 0\), no interior steady state with both high \(Q\) and \(E \le E^{\lim}\) exists. That is the ODE form of “demand reduction is a prerequisite.”
 
@@ -293,7 +299,7 @@ LICQ may fail at corners where several ceilings activate together (Ipopt is then
 **Primary (v1).** Direct transcription of §4 to a sparse NLP:
 
 1. Discretize \([t_0,T]\) with \(N_t \sim 50\)--\(100\) collocation intervals (trapezoidal or Radau).
-2. Decision vector: \(\{Y*i, Q_i, E_i, P_i, L_i, u*{W,i}, u*{D,i}\}*{i=0}^{N_t}\).
+2. Decision vector: \(\{Y_i, Q_i, E_i, P_i, L_i, u_{W,i}, u_{D,i}\}_{i=0}^{N_t}\).
 3. Defect constraints for the ODEs; inequality constraints for path and budget at nodes.
 4. Solve with an interior-point NLP solver (**Ipopt**), from several initial guesses (welfare-only, reduction-only, joint, BAU).
 
@@ -330,9 +336,9 @@ Values are **point estimate / range / trajectory / unknown**, never a single une
 
 ### 7.1 Which parameters move the answer
 
-**First-order.** BAU demand path \(r(t)\) and its Global South share; initial headcount/output \(N*0,Y_0\) by species; SAD rates \(\varphi*{\mathrm{conv}}, \varphi*{\mathrm{hw}}\); welfare-impact markups \(e^{\mathrm{hw}}/e^{\mathrm{conv}}\) and \(\pi*{\mathrm{hw}}/\pi\_{\mathrm{conv}}\); own-price elasticity \(\varepsilon\); WTP ceiling \(P^{\lim}\); planetary allocation \(E^{\lim}\); species replacement \(S(P)\); how much demand \(u_D\) can actually shift (\(\lambda_D\)).
+**First-order.** BAU demand path \(r(t)\) and its Global South share; initial headcount/output \(N_0,Y_0\) by species; SAD rates \(\varphi_{\mathrm{conv}}, \varphi_{\mathrm{hw}}\); welfare-impact markups \(e^{\mathrm{hw}}/e^{\mathrm{conv}}\) and \(\pi_{\mathrm{hw}}/\pi_{\mathrm{conv}}\); own-price elasticity \(\varepsilon\); WTP ceiling \(P^{\lim}\); planetary allocation \(E^{\lim}\); species replacement \(S(P)\); how much demand \(u_D\) can actually shift (\(\lambda_D\)).
 
-**Second-order.** Discount \(\rho\); environmental recovery \(\delta*E\); labor depreciation \(\delta_L\); density-relief rate \(\eta*{\rho}\) and delicacy exponent \(\nu\) (sweep; they change \(Q\) and \(P\) on deep demand cuts); advocacy cost \(c_W\) vs \(c_D\) except when the budget is very tight; shrimp/insects (huge \(N\), low \(\omega\), weak current campaign lever); AI substituting for \(L\); feed-tech decoupling of \(\kappa\).
+**Second-order.** Discount \(\rho\); environmental recovery \(\delta_E\); labor depreciation \(\delta_L\); density-relief rate \(\eta_{\rho}\) and delicacy exponent \(\nu\) (sweep; they change \(Q\) and \(P\) on deep demand cuts); relative advocacy cost \(c_D/c_W\) (now always binding, since \(u_W,u_D\) share one fixed annual unit — see §7.2 Advocacy budget); shrimp/insects (huge \(N\), low \(\omega\), weak current campaign lever); AI substituting for \(L\); feed-tech decoupling of \(\kappa\).
 
 ### 7.2 Parameter blocks
 
@@ -350,7 +356,7 @@ Values are **point estimate / range / trajectory / unknown**, never a single une
 
 ### Broiler numbers (baseline)
 
-- **Symbol:** \(N\_{\mathrm{br}}(t_0)\), slaughter and standing
+- **Symbol:** \(N_{\mathrm{br}}(t_0)\), slaughter and standing
 - **Definition:** Broilers slaughtered per year and alive at a given time.
 - **Units:** animals / year and animals
 - **Point estimate:** Slaughter \(76.2 \times 10^9\) (2023) \(\rightarrow\) \(87.3 \times 10^9\) (2033), \(+14.6\%\). Standing \(10.1 \times 10^9 \rightarrow 11.6 \times 10^9\).
@@ -362,7 +368,7 @@ Values are **point estimate / range / trajectory / unknown**, never a single une
 
 ### Finfish numbers (baseline)
 
-- **Symbol:** \(N\_{\mathrm{ff}}(t_0)\)
+- **Symbol:** \(N_{\mathrm{ff}}(t_0)\)
 - **Definition:** Farmed finfish slaughtered per year and standing.
 - **Units:** animals / year and animals
 - **Point estimate:** Slaughter \(133.6 \times 10^9\) \([86.0,\ 181.2] \times 10^9\) (2023) \(\rightarrow\) \(155.1 \times 10^9\) \([99.8,\ 210.4] \times 10^9\) (2033), \(+16.1\%\). Standing \(222.6 \times 10^9 \rightarrow 258.6 \times 10^9\).
@@ -386,7 +392,7 @@ Values are **point estimate / range / trajectory / unknown**, never a single une
 
 ### High-welfare cost multiplier (broilers, ECC)
 
-- **Symbol:** \(h*{\mathrm{ECC}}\) or \(h(Q*{\mathrm{ECC}})\)
+- **Symbol:** \(h_{\mathrm{ECC}}\) or \(h(Q_{\mathrm{ECC}})\)
 - **Definition:** Production cost relative to conventional at farm / after processing.
 - **Units:** dimensionless (\(P/P_0\))
 - **Point estimate:** \(+19\%\) farm, \(+16\%\) after slaughter, \(+19\%\) after processing (average of PL, DE, ES, FR, IT, NL).
@@ -410,12 +416,12 @@ Values are **point estimate / range / trajectory / unknown**, never a single une
 
 ### High-welfare markups (layers, cage-free)
 
-- **Symbol:** \(e^{\mathrm{hw}}_{\mathrm{layer}}/e^{\mathrm{conv}}_{\mathrm{layer}}\), \(\pi*{\mathrm{hw}}/\pi*{\mathrm{conv}}\)
+- **Symbol:** \(e^{\mathrm{hw}}_{\mathrm{layer}}/e^{\mathrm{conv}}_{\mathrm{layer}}\), \(\pi_{\mathrm{hw}}/\pi_{\mathrm{conv}}\)
 - **Definition:** Extra GHG/land per tonne eggs, and extra hens per tonne, vs enriched cage.
 - **Units:** ratios
 - **Point estimate (project text):** enriched cage \(\to\) barn: GHG \(+56\%\), land \(+13\%\) per tonne eggs (Martinic et al. 2026, as cited in _Limits to Welfare_). Organic free-range vs BAU: GHG \(\sim +60\%\), land nearly \(\times 2\) (same paper, UK, constant egg output).
 - **Uncertainty / range:** Underlying LCA data are partly 2009–2010; authors flag this. Mortality and hen numbers are higher in non-cage systems, so \(N\) rises at fixed \(Y\).
-- **Time development:** UK/EU legal cage phase-outs move \(\alpha\_{\mathrm{layer}}\) independent of EA campaigns.
+- **Time development:** UK/EU legal cage phase-outs move \(\alpha_{\mathrm{layer}}\) independent of EA campaigns.
 - **Scope:** UK egg systems; not Global South.
 - **Source:** Martinic, Bartlett et al., _Royal Society Open Science_ (2026), doi:10.1098/rsos.251830.
 - **Confidence:** medium (old inventory, UK-specific).
@@ -425,9 +431,9 @@ Values are **point estimate / range / trajectory / unknown**, never a single une
 - **Symbol:** \(E_k^{\lim}\)
 - **Definition:** Food-system allocation of planetary boundaries; livestock must fit inside a share of these.
 - **Units:** GtCO₂e / year; M km² agricultural land; Tg P / year; Tg N / year
-- **Point estimate:** Food systems are **already past** the 2025 EAT-Lancet food-system boundaries (FSBs), which are the food allocation of the planetary boundaries (Rockström et al. 2009; Steffen et al. 2015; Richardson et al. 2023 — six of nine PBs transgressed; food drives five of those). Current / FSB: climate \(16\)–\(17.7\) GtCO₂e yr\(^{-1}\) vs \(5\) (\(\approx 3.2\)–\(3.5\)); agricultural land \(48\) M km² vs \(48\) (\(\approx 1.0\)–\(1.09\), 37% vs 34% of land area); N surplus \(119\) vs \(57\) Tg N (\(\approx 2.1\)); P to surface water from food \(7.2\) vs \(4.6\) Tg P (\(\approx 1.6\)). If livestock’s share of the FSB equals its share of current food impact (Poore & Nemecek: 56–58% of food emissions, 83% of farmland), livestock / livestock-allocation equals food / FSB. Composite (arithmetic mean of the four ratios) \(\approx 2.0\). The v1 scalar is therefore \(E*0/E*{\lim} = 2.0\), not \(0.25\).
+- **Point estimate:** Food systems are **already past** the 2025 EAT-Lancet food-system boundaries (FSBs), which are the food allocation of the planetary boundaries (Rockström et al. 2009; Steffen et al. 2015; Richardson et al. 2023 — six of nine PBs transgressed; food drives five of those). Current / FSB: climate \(16\)–\(17.7\) GtCO₂e yr\(^{-1}\) vs \(5\) (\(\approx 3.2\)–\(3.5\)); agricultural land \(48\) M km² vs \(48\) (\(\approx 1.0\)–\(1.09\), 37% vs 34% of land area); N surplus \(119\) vs \(57\) Tg N (\(\approx 2.1\)); P to surface water from food \(7.2\) vs \(4.6\) Tg P (\(\approx 1.6\)). If livestock’s share of the FSB equals its share of current food impact (Poore & Nemecek: 56–58% of food emissions, 83% of farmland), livestock / livestock-allocation equals food / FSB. Composite (arithmetic mean of the four ratios) \(\approx 2.0\). The v1 scalar is therefore \(E_0/E_{\lim} = 2.0\), not \(0.25\).
 - **Uncertainty / range:** \(1.1\) (land-only) to \(3.4\) (climate-only). FAO farm-gate livestock \(4.3\) GtCO₂e (enteric + manure, excluding land-use change and feed energy) vs a 57% slice of the \(5\) Gt FSB (\(\approx 2.85\) Gt) still gives \(\approx 1.5\).
-- **Time development:** Ceilings are 2050 _targets_. Today is already over; BAU raises pressure further. Open-loop \(E(t)\) may stay \(> E*{\lim}\). The optimizer must not require \(E(t_0)\le E*{\lim}\) (infeasible); it should not worsen the overshoot and should restore \(E(T)\le E\_{\lim}\).
+- **Time development:** Ceilings are 2050 _targets_. Today is already over; BAU raises pressure further. Open-loop \(E(t)\) may stay \(> E_{\lim}\). The optimizer must not require \(E(t_0)\le E_{\lim}\) (infeasible); it should not worsen the overshoot and should restore \(E(T)\le E_{\lim}\).
 - **Scope:** Global food system, not livestock-only.
 - **Source:** EAT-Lancet Commission 2025; Crona et al., _Nature Food_ (2025) food-system boundaries; Rockström et al. (2009); Steffen et al. (2015); Richardson et al., _Science Advances_ (2023); Poore & Nemecek, _Science_ 360:987 (2018); FAO agrifood emissions 2023.
 - **Confidence:** high that livestock is already outside the safe operating space; medium on the exact composite \(2.0\) (climate-only \(\sim 3.3\), land-only \(\sim 1.1\)).
@@ -446,22 +452,22 @@ Values are **point estimate / range / trajectory / unknown**, never a single une
 
 ### Density-relief threshold (quality vs headcount)
 
-- **Symbol:** \(N*{\rho}\), \(\eta*{\rho}\)
-- **Definition:** Headcount below which leftover housing/land is used as lower stocking density (not mothballed), so \(Q\) can rise without extra \(u*W\). Rate \(\eta*{\rho}\) is the extra approach of \(Q\) to \(Q\_{\max}\).
+- **Symbol:** \(N_{\rho}\), \(\eta_{\rho}\)
+- **Definition:** Headcount below which leftover housing/land is used as lower stocking density (not mothballed), so \(Q\) can rise without extra \(u_W\). Rate \(\eta_{\rho}\) is the extra approach of \(Q\) to \(Q_{\max}\).
 - **Units:** animals; 1/year
-- **Point estimate:** \(N*{\rho} = 0.85 N_0\) (about a 15% cut before density relief; Dawkins et al. 2004: welfare harm from density is clear mainly at very high kg/m², \(\ge 42\); Estevez 2007: health compromised below \(\sim 0.0625\)--\(0.07\) m²/bird \(\approx 34\)--\(38\) kg/m²). \(\eta*{\rho} = 0.08\)/year is **calibration**, not a measured campaign rate.
-- **Uncertainty / range:** \(N\_{\rho}/N_0 \in [0.7, 1.0]\). At \(1.0\) any cut raises \(Q\); at \(0.7\) only a large contraction does. Buijs et al. 2009: no single density cliff — different indicators move at different kg/m². Yang et al. arXiv:2602.00111: calf play vs space is **non-monotone** (peak \(8\)--\(10\) m²). Waterhouse 1996: extensification without keeping inputs does **not** raise performance.
-- **Time development:** Housing stock is sticky on a 5–15 year campaign scale, then sheds are mothballed (relief fades). v1 keeps \(N\_{\rho}\) constant.
+- **Point estimate:** \(N_{\rho} = 0.85 N_0\) (about a 15% cut before density relief; Dawkins et al. 2004: welfare harm from density is clear mainly at very high kg/m², \(\ge 42\); Estevez 2007: health compromised below \(\sim 0.0625\)--\(0.07\) m²/bird \(\approx 34\)--\(38\) kg/m²). \(\eta_{\rho} = 0.08\)/year is **calibration**, not a measured campaign rate.
+- **Uncertainty / range:** \(N_{\rho}/N_0 \in [0.7, 1.0]\). At \(1.0\) any cut raises \(Q\); at \(0.7\) only a large contraction does. Buijs et al. 2009: no single density cliff — different indicators move at different kg/m². Yang et al. arXiv:2602.00111: calf play vs space is **non-monotone** (peak \(8\)--\(10\) m²). Waterhouse 1996: extensification without keeping inputs does **not** raise performance.
+- **Time development:** Housing stock is sticky on a 5–15 year campaign scale, then sheds are mothballed (relief fades). v1 keeps \(N_{\rho}\) constant.
 - **Scope:** Indoor poultry-like systems; weaker for already-extensive ruminants.
 - **Source:** Dawkins, Donnelly & Jones, _Nature_ 427:342–344 (2004); Estevez, _Poultry Science_ 86:1265 (2007); Buijs et al., _Poultry Science_ 88:1536–1543 (2009); Waterhouse et al. in _Extensification_ (1996); Yang et al. arXiv:2602.00111.
-- **Confidence:** high that _very high_ density harms welfare; medium that global \(N\) cuts translate into lower kg/m² rather than fewer intensive farms; low on \(\eta\_{\rho}\).
+- **Confidence:** high that _very high_ density harms welfare; medium that global \(N\) cuts translate into lower kg/m² rather than fewer intensive farms; low on \(\eta_{\rho}\).
 
 ### Delicacy / residual-luxury price exponent
 
-- **Symbol:** \(N\_{\delta}\), \(\nu\)
-- **Definition:** Below \(N*{\delta}\), remaining meat carries a quantity premium \(\bigl(N*{\delta}/\min\{N,N\_{\delta}\}\bigr)^{\nu}\) on top of production cost. Proxy for farm exit plus high-WTP residual demand, not for a leftward demand-curve shift.
+- **Symbol:** \(N_{\delta}\), \(\nu\)
+- **Definition:** Below \(N_{\delta}\), remaining meat carries a quantity premium \(\bigl(N_{\delta}/\min\{N,N_{\delta}\}\bigr)^{\nu}\) on top of production cost. Proxy for farm exit plus high-WTP residual demand, not for a leftward demand-curve shift.
 - **Units:** animals; dimensionless
-- **Point estimate:** \(N\_{\delta} = 0.70 N_0\); \(\nu = 0.25\). A 50% headcount cut then marks up price by \((0.70/0.50)^{0.25} \approx 9\%\), inside the mass-market WTP band. Full inverse demand \(\nu = 1/\varepsilon \approx 1.7\) would explode \(P\) and is **rejected** for demand-side \(u_D\).
+- **Point estimate:** \(N_{\delta} = 0.70 N_0\); \(\nu = 0.25\). A 50% headcount cut then marks up price by \((0.70/0.50)^{0.25} \approx 9\%\), inside the mass-market WTP band. Full inverse demand \(\nu = 1/\varepsilon \approx 1.7\) would explode \(P\) and is **rejected** for demand-side \(u_D\).
 - **Uncertainty / range:** \(\nu \in [0, 0.5]\). \(\nu = 0\) recovers cost-only pricing. Lusk and Tonsor (2016): meat demand more inelastic at higher prices (convex inverse demand). US cattle-herd tightness raises beef prices (supply shock). A pure \(u_D\) demand shift would _lower_ \(P\); this term is the opposing residual-luxury channel.
 - **Time development:** Stronger if remaining consumers are high-income (selection); weaker if alternatives cap the premium.
 - **Scope:** High-income residual markets; weaker where meat is still a calorie staple.
@@ -470,11 +476,11 @@ Values are **point estimate / range / trajectory / unknown**, never a single une
 
 ### SAD rates (suffering intensity)
 
-- **Symbol:** \(\varphi*{s,\mathrm{conv}}, \varphi*{s,\mathrm{hw}}\), \(\phi(Q)\)
+- **Symbol:** \(\varphi_{s,\mathrm{conv}}, \varphi_{s,\mathrm{hw}}\), \(\phi(Q)\)
 - **Definition:** Disabling-pain-equivalent days per animal-year (SADs). One human-day of disabling pain \(= 1\) SAD (Ambitious Impact / Charity Entrepreneurship).
 - **Units:** SAD / animal-year (or SAD / animal-life)
-- **Point estimate:** **Unknown as a single global number.** Do not use Gemini’s \(s\_{\mathrm{hw}} = 0.60\) as data. Construct \(\phi\) by interpolating Welfare Footprint time-in-pain for named systems (conventional broiler vs ECC; cage vs aviary), then multiply by sentience \(\times\) welfare range.
-- **Uncertainty / range:** Rethink Priorities chicken welfare range 5th--50th--95th: \(0.002,\ 0.332,\ 0.869\) (human \(=1\)). Pain inventories differ by metric (SADs vs DCDEs); Šimčikas (2025) shows ranking of cage-free vs broiler vs plant-based **flips** with the metric. Treat \(\varphi*{\mathrm{hw}}/\varphi*{\mathrm{conv}} \in [0.4,\ 0.8]\) as a sensitivity band for ECC-like reforms, not a measurement.
+- **Point estimate:** **Unknown as a single global number.** Do not use Gemini’s \(s_{\mathrm{hw}} = 0.60\) as data. Construct \(\phi\) by interpolating Welfare Footprint time-in-pain for named systems (conventional broiler vs ECC; cage vs aviary), then multiply by sentience \(\times\) welfare range.
+- **Uncertainty / range:** Rethink Priorities chicken welfare range 5th--50th--95th: \(0.002,\ 0.332,\ 0.869\) (human \(=1\)). Pain inventories differ by metric (SADs vs DCDEs); Šimčikas (2025) shows ranking of cage-free vs broiler vs plant-based **flips** with the metric. Treat \(\varphi_{\mathrm{hw}}/\varphi_{\mathrm{conv}} \in [0.4,\ 0.8]\) as a sensitivity band for ECC-like reforms, not a measurement.
 - **Time development:** \(\phi\) depends on \(Q(t)\), not on calendar time except via campaigns.
 - **Scope:** Species- and system-specific.
 - **Source:** Charity Entrepreneurship, _SADs_ (method); Welfare Footprint Project (pain times); Rethink Priorities welfare ranges; ACE charity reviews using SADs (illustrative CEAs, not global totals).
@@ -494,7 +500,7 @@ Values are **point estimate / range / trajectory / unknown**, never a single une
 
 ### Productivity penalty
 
-- **Symbol:** \(\pi*{\mathrm{hw}}/\pi*{\mathrm{conv}}\), \(\kappa\_\pi\)
+- **Symbol:** \(\pi_{\mathrm{hw}}/\pi_{\mathrm{conv}}\), \(\kappa_\pi\)
 - **Definition:** Edible output per animal-year, high-welfare vs conventional.
 - **Units:** dimensionless ratio
 - **Point estimate:** For ECC, slower-growing breeds and lower density imply more animal-days per kg; land \(+14.4\%\) per kg is a **proxy** for extra feed/animals, not a direct headcount ratio. For layers, non-cage systems need more hens and have higher mortality at constant egg output (Martinic et al. 2026).
@@ -502,7 +508,7 @@ Values are **point estimate / range / trajectory / unknown**, never a single une
 - **Time development:** Could improve if high-welfare genetics close the FCR gap (unknown).
 - **Scope:** ECC broilers; UK layers.
 - **Source:** Wageningen 2025; Martinic et al. 2026; ADAS/AVEC ECC study (industry-commissioned; use as an upper-bound sensitivity, not as the central case).
-- **Confidence:** medium directionally (\(\pi*{\mathrm{hw}} < \pi*{\mathrm{conv}}\)); low on the exact ratio.
+- **Confidence:** medium directionally (\(\pi_{\mathrm{hw}} < \pi_{\mathrm{conv}}\)); low on the exact ratio.
 
 ### Demand-reduction control effectiveness
 
@@ -519,7 +525,7 @@ Values are **point estimate / range / trajectory / unknown**, never a single une
 ### Welfare-campaign effectiveness
 
 - **Symbol:** \(\eta_W\)
-- **Definition:** Speed at which \(Q\) approaches \(Q\_{\max}\) per unit of \(A_W\).
+- **Definition:** Speed at which \(Q\) approaches \(Q_{\max}\) per unit of \(A_W\).
 - **Units:** 1/year
 - **Point estimate:** **Unknown** as a continuous rate. Discrete evidence: cage-free fulfillment often \(85\)--\(90\%\) where the cost was \(1\)--\(2\) ¢/egg; ECC fulfillment much worse (ChickenTrack: \(>58\%\) of tracked EU commitments with zero public progress — _Limits to Welfare_). Coefficient Giving: current corporate-campaign CE \(\sim 1/5\) of Šimčikas (2019).
 - **Uncertainty / range:** Calibrate \(\eta_W\) so that \(u_W \equiv 1\), \(u_D = 0\) can raise \(Q\) to ECC-like levels in \(5\)--\(10\) years **before** ceilings bind, then let ceilings do the rest (qualitative match to the simulation figure).
@@ -542,15 +548,15 @@ Values are **point estimate / range / trajectory / unknown**, never a single une
 
 ### Advocacy budget
 
-- **Symbol:** \(B(t)\), \(c_W\), \(c_D\)
-- **Definition:** Annual spend and relative cost of the two controls.
-- **Units:** USD / year; USD per unit control
-- **Point estimate:** **Unknown** for “the” planner. Historical split: \(\sim 60\%\) of disclosed EA AW donations 2019–2021 to corporate welfare, \(\sim 9\%\) to alt proteins (JamesOz 2021). EAAWF 2026–2028 priorities exclude institutional meat reduction and alt-protein advocacy.
-- **Uncertainty / range:** Run both an unconstrained-\(B\) problem (physical ceilings only) and a tight-\(B\) problem. The first answers “what mix is required”; the second “what mix is affordable.”
-- **Time development:** Optional constant \(B\).
+- **Symbol:** \(c_W\), \(c_D\); \(B \equiv 1\) by normalization (not an estimated parameter)
+- **Definition:** \(B\) is defined, not measured: one advocacy-budget unit per year is the planner's entire incremental capacity for the two levers that year, whatever that is in real dollars. \(c_W, c_D\) are the *relative* cost of one unit of campaign intensity in each lever, drawn from that same fixed unit.
+- **Units:** dimensionless (\(B\)); dimensionless, budget-share per unit control (\(c_W, c_D\))
+- **Point estimate:** \(B=1\) always. \(c_W = c_D = 1\) (equal-cost default) — there is no evidence that a unit of welfare-campaign intensity costs more or less than a unit of demand-reduction intensity *as defined here*; the historical split (\(\sim 60\%\) of disclosed EA AW donations 2019–2021 to corporate welfare, \(\sim 9\%\) to alt proteins; JamesOz 2021) is a revealed *allocation* \((u_W,u_D)\), not a cost ratio, and should not be read as \(c_D/c_W \approx 6.7\).
+- **Uncertainty / range:** \(c_D/c_W\) is the open empirical question — if welfare-specialist ever finds a real dollar cost per unit of demand shifted vs per unit of \(Q\) raised, replace the equal-cost default and re-run. Until then, sweep \(c_D/c_W\) rather than \(B\): \(B\) is not swept, since it is a normalization, not an unknown.
+- **Time development:** \(B\equiv 1\) constant by definition; \(c_W,c_D\) could vary with campaign maturity (unknown).
 - **Scope:** EA farmed-animal funding, not global livestock subsidies.
-- **Source:** JamesOz 2021; EAAWF 2025 priorities (as cited in _Limits to Welfare_).
-- **Confidence:** medium on the historical split; the model should not assume that split is optimal.
+- **Source:** JamesOz 2021; EAAWF 2025 priorities (as cited in _Limits to Welfare_) — historical context for \(u_W,u_D\) only, not for \(c_W,c_D\).
+- **Confidence:** n/a for \(B\) (definitional); low for \(c_W,c_D\).
 
 ### Discount rate
 
@@ -580,14 +586,14 @@ Values are **point estimate / range / trajectory / unknown**, never a single une
 
 - Not a claim that demand reduction is cheaper per marginal SAD today.
 - Not a Pareto front over climate, cost, labor, and welfare (that is the EMOO companion).
-- Not parameterized tightly enough to output a dollar split. First-order elasticities \(\lambda_D, \eta_W, \varphi, P^{\lim}\) must be swept.
+- Not parameterized tightly enough to output a dollar split: \(u_W,u_D\) are a *share* of one normalized annual budget unit, not a dollar amount, unless real relative costs \(c_W,c_D\) are supplied. First-order elasticities \(\lambda_D, \eta_W, \varphi, P^{\lim}\) must be swept.
 - Not a Python implementation.
 
 ---
 
 ## Formulation handoff
 
-**Objectives:** Minimize \(J = \int\_{t_0}^{T} e^{-\rho t}\, \omega\, N(t)\, \phi(Q(t))\, dt\) with \(\rho = 0\) by default. Welfare \(W = -J\). No other objectives.
+**Objectives:** Minimize \(J = \int_{t_0}^{T} e^{-\rho t}\, \omega\, N(t)\, \phi(Q(t))\, dt\) with \(\rho = 0\) by default. Welfare \(W = -J\). No other objectives.
 
 **Decision / state variables:**
 
@@ -598,24 +604,24 @@ Values are **point estimate / range / trajectory / unknown**, never a single une
 **Constraints:**
 
 - Path: if \(E(t_0)\le E^{\lim}\) then \(E(t)\le E^{\lim}\) for all \(t\); if already overshot, \(E(t)\le 1.05 E(t_0)\) and \(E(T)\le E^{\lim}\). Also \(P(t)\le P^{\lim}\), \(N(t)/L(t)\le \xi^{\lim}\).
-- Control: \(c_W u_W + c_D u_D \le B(t)\), box bounds.
-- Dynamics and \(\mathbf{x}(t_0) = \mathbf{x}\_0\) with \(E_0/E^{\lim}\approx 2\) (composite current / livestock FSB).
+- Control: \(c_W u_W + c_D u_D \le 1\) (unit annual advocacy budget, \(B\equiv1\) — the two levers draw on the same fixed pool), \(u_W,u_D \ge 0\).
+- Dynamics and \(\mathbf{x}(t_0) = \mathbf{x}_0\) with \(E_0/E^{\lim}\approx 2\) (composite current / livestock FSB).
 - Static NLP of §3 as a 2050 diagnostic (three scenarios + true min).
 
-**Dynamics:** Smoothed five-ODE system in §4.2, including density-relief \(\eta*{\rho}(1-N/N*{\rho})_+(Q_{\max}-Q)\) and delicacy markup \((N*{\delta}/\min\{N,N*{\delta}\})^{\nu}\) on the price target.
+**Dynamics:** Smoothed five-ODE system in §4.2, including density-relief \(\eta_{\rho}(1-N/N_{\rho})_+(Q_{\max}-Q)\) and delicacy markup \((N_{\delta}/\min\{N,N_{\delta}\})^{\nu}\) on the price target.
 
 **Suggested algorithm family:** GEKKO or Pyomo.dae collocation + Ipopt; multi-start from welfare-only, reduction-only, joint, and BAU. Static §3 with the same solver. Do not start with NSGA-III.
 
-**Numerical caveats:** Nonconvex (multi-start); stiffness near ceilings (implicit collocation); scale states to \(O(1)\); smooth \((P-P^{\lim})\_+\); path-constraint chatter; BAU may be infeasible under tight \(E^{\lim}\).
+**Numerical caveats:** Nonconvex (multi-start); stiffness near ceilings (implicit collocation); scale states to \(O(1)\); smooth \((P-P^{\lim})_+\); path-constraint chatter; BAU may be infeasible under tight \(E^{\lim}\).
 
-**Parameters still needed (values in §7; sweep if confidence is low):** \(r(t)\), \(Y*0\)/\(N_0\) by species, \(\varepsilon\), \(h(Q)\) and \(e^{\mathrm{hw}}/e^{\mathrm{conv}}\), \(\pi*{\mathrm{hw}}/\pi*{\mathrm{conv}}\), \(E^{\lim}\) (livestock quota of EAT-Lancet), \(P^{\lim}\), \(\varphi*{\mathrm{conv}}, \varphi\_{\mathrm{hw}}\) (or Welfare Footprint tables), \(\omega_s\), \(\lambda_D\), \(\eta_W\), \(\xi^{\lim}\), \(B, c_W, c_D\), \(\rho\).
+**Parameters still needed (values in §7; sweep if confidence is low):** \(r(t)\), \(Y_0\)/\(N_0\) by species, \(\varepsilon\), \(h(Q)\) and \(e^{\mathrm{hw}}/e^{\mathrm{conv}}\), \(\pi_{\mathrm{hw}}/\pi_{\mathrm{conv}}\), \(E^{\lim}\) (livestock quota of EAT-Lancet), \(P^{\lim}\), \(\varphi_{\mathrm{conv}}, \varphi_{\mathrm{hw}}\) (or Welfare Footprint tables), \(\omega_s\), \(\lambda_D\), \(\eta_W\), \(\xi^{\lim}\), \(c_W, c_D\) (\(B\equiv 1\) is fixed by normalization, not swept), \(\rho\).
 
 **Outputs for the first simulation (model-engineer):**
 
 1. Optimal \(u_W^\star(t), u_D^\star(t)\) and state trajectories vs the three diagnostic scenarios.
 2. Cumulative SADs \(J\) for each.
 3. Which constraint is active when \(Q\) stalls.
-4. Tornado sensitivity on \(\lambda*D\), \(P^{\lim}\), \(\varphi*{\mathrm{hw}}/\varphi\_{\mathrm{conv}}\), \(\kappa\), \(r\).
+4. Tornado sensitivity on \(\lambda_D\), \(P^{\lim}\), \(\varphi_{\mathrm{hw}}/\varphi_{\mathrm{conv}}\), \(\kappa\), \(r\).
 5. Plots a non-mathematician can read: headcount, quality, biophysical pressure, price, with ceiling lines — same layout as `literature/welfare-simulation.png`, plus a SAD time series.
 
 ### Implementation notes (stack)

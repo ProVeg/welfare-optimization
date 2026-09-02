@@ -1,6 +1,7 @@
-# Joint diagnostic (constant interior mix). Not the optimized policy.
+# Joint diagnostic (constant interior mix): an even 50/50 split of the one
+# unit annual advocacy budget (u_W + u_D <= 1). Not the optimized policy.
 label: Joint (constant)
-u_W: 0.7
-u_D: 0.7
+u_W: 0.5
+u_D: 0.5
 color: "#1b9e77"
 linestyle: "-"

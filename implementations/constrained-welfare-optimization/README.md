@@ -2,7 +2,7 @@
 
 Python implementation of the aggregate 2026–2050 model in [`models/constrained-welfare-optimization.md`](../../models/constrained-welfare-optimization.md).
 
-The only objective is **less total suffering** (Suffering-Adjusted Days, SADs). Environmental pressure, meat price, and animals-per-worker are **hard ceilings**: they may sit below the limit; they must not be forced onto the limit.
+The only objective is **less total suffering** (Suffering-Adjusted Days, SADs). Environmental pressure, meat price, and animals-per-worker are **hard ceilings**: they may sit below the limit; they must not be forced onto the limit. Welfare-standard campaigns (`u_W`) and demand-reduction campaigns (`u_D`) draw on **one shared unit annual advocacy budget** — that trade-off is the question this model answers.
 
 Unknown campaign rates (`lambda_D`, `eta_W`) are **calibrated**, not measured. Change them in YAML or with `--set`.
 
@@ -57,16 +57,7 @@ Thin wrappers do the same thing: `scripts/run_scenarios.py`, `run_optimize.py`, 
 | `optimize` | Minimizes cumulative SADs with inequality path constraints. Also plots the four open-loop strategies for comparison. |
 | `sensitivity` | One-at-a-time tornado around the joint diagnostic. Does **not** re-optimize the policy. |
 
-The four open-loop strategies live in `configs/scenarios/*.yaml`:
-
-| File | Label | `u_W` | `u_D` | Meaning |
-| --- | --- | --- | --- | --- |
-| `bau.yaml` | BAU | 0 | 0 | No extra welfare campaigns, no extra demand reduction |
-| `welfare_only.yaml` | Welfare-only | 1 | 0 | Full welfare-standard campaigns, no demand reduction |
-| `reduction_only.yaml` | Reduction-only | 0 | 1 | Full demand reduction, no welfare campaigns |
-| `joint.yaml` | Joint (constant) | 0.7 | 0.7 | Constant interior mix (a diagnostic, not the optimum) |
-
-`u_W` and `u_D` are campaign intensities on a 0–1 scale. 0 means no extra campaign that year; 1 means full intensity.
+The four open-loop strategies live in `configs/scenarios/*.yaml`. `u_W` and `u_D` are campaign intensities on a 0–1 scale that share **one unit annual advocacy budget** (`c_W*u_W + c_D*u_D <= 1`): spending more on one lever leaves strictly less for the other, so `(u_W,u_D)=(1,1)` is not feasible. Full table (colors, linestyles) in [`configs/parameters/scenarios.md`](configs/parameters/scenarios.md).
 
 ### Common flags
 
@@ -117,103 +108,15 @@ python -m cwo sensitivity --config configs/default.yaml --spec configs/sensitivi
 
 ## Parameters
 
-All model numbers live in `configs/default.yaml`. Nested `horizon.*` keys can be overridden as `horizon.T=2100`; everything else is a top-level key (`N0=1.01e10`).
+All model numbers live in `configs/default.yaml`. Nested `horizon.*` keys can be overridden as `horizon.T=2100`; everything else is a top-level key (`N0=1.01e10`). Rates tagged as calibration in the YAML are **not measurements** — they are set so the open-loop diagnostics behave as described in the model document.
 
-Rates tagged as calibration in the YAML are **not measurements**. They are set so the open-loop diagnostics behave as described in the model document.
+For the full, human-scannable table of every key (units, value, meaning), see [`configs/parameters/`](configs/parameters/):
 
-### Horizon and solver
+- [default.md](configs/parameters/default.md) — every key in `configs/default.yaml`, grouped by horizon/solver, demand, quality, prices, biophysical pressure, labor, and controls/budget.
+- [sensitivity.md](configs/parameters/sensitivity.md) — the low/high tornado sweep in `configs/sensitivity.yaml`.
+- [scenarios.md](configs/parameters/scenarios.md) — the four open-loop strategy configs in `configs/scenarios/*.yaml`.
 
-| Key | Typical value | Meaning |
-| --- | --- | --- |
-| `horizon.t0` | 2026 | Start year |
-| `horizon.T` | 2050 | Last year of the run (set to 2100 for a century path) |
-| `horizon.n_points` | 241 | Output samples written to CSVs |
-| `horizon.fsb_year` | 2050 | From this year onward the optimizer must keep environmental pressure at or below `E_lim` |
-| `ivp_method` | BDF | SciPy IVP method for open-loop trajectories |
-| `ivp_rtol` / `ivp_atol` | 1e-6 / 1e-8 | Integrator tolerances |
-| `ocp_nodes` | 41 | Collocation mesh size for GEKKO |
-| `ocp_max_iter` | 200 | Optimizer iteration cap |
-| `slsqp_pieces` | 10 | Piecewise-constant control intervals for the SLSQP fallback |
-| `static_alpha_max_k` | 2.0 | How fast welfare-campaign effort can raise the high-welfare share in the 2050 snapshot NLP |
-
-### Demand and headcount
-
-Standing animals \(N\) are a poultry-like stock (broilers), not slaughtered birds.
-
-| Key | Typical value | Meaning |
-| --- | --- | --- |
-| `N0` | 1.01e10 | Standing animals at \(t_0\) |
-| `pi0` | 12.1 | Edible kg per standing-animal-year at quality \(Q=0\) |
-| `kappa_pi` | 0.288 | How much productivity falls as quality rises: \(\pi(Q)=\pi_0/(1+\kappa_\pi Q)\) |
-| `r` | 0.011 | Business-as-usual demand growth (1/year) |
-| `epsilon` | 0.6 | Price elasticity of demand (higher price → fewer kilograms) |
-| `s_coeff` | 0.2 | Species-replacement: a 20% price rise → 20% more small-bodied headcount |
-
-### Quality and suffering
-
-| Key | Typical value | Meaning |
-| --- | --- | --- |
-| `Q0` | 0.10 | Starting average quality of life (0–1; conventional-dominant) |
-| `Q_max` | 1.0 | Industrial-scale welfare ceiling |
-| `Q_ecc` | 0.50 | ECC-like mid reform (not a “good life”) |
-| `omega` | 1.0 | Chicken-equivalent welfare-range weight |
-| `phi_conv` | 1.0 | SAD intensity per conventional animal-year (index) |
-| `phi_hw` | 0.6 | SAD intensity per high-welfare animal-year (index; midpoint of a 0.4–0.8 band) |
-| `rho` | 0.0 | Discount rate on future SADs (0 = undiscounted) |
-
-Suffering is an **index**, not a census of global SADs. Rankings and ratios are the usable output; absolute billions are not a headcount of real days of suffering.
-
-### Prices and willingness to pay
-
-| Key | Typical value | Meaning |
-| --- | --- | --- |
-| `P0` | 1.0 | Price index at \(t_0\) |
-| `P_lim` | 1.15 | Mass-market willingness-to-pay ceiling (about 10–15% above today) |
-| `h_exp` | 0.347 | Cost markup \(h(Q)=P_0\exp(h_{\mathrm{exp}} Q)\); ECC at \(Q_{\mathrm{ecc}}\) is about +19% |
-| `h_ecc` | 1.19 | ECC cost multiplier used in the static 2050 NLP |
-| `psi` | 12.0 | How fast welfare standards collapse once price exceeds `P_lim` |
-| `smooth_eps` | 1e-6 | Numerical smoothing for the “price above ceiling” switch |
-
-### Biophysical pressure
-
-\(E\) is livestock pressure as a **share of the livestock allocation** of the EAT-Lancet 2025 food-system boundary. \(E=1\) is that allocation, not “today’s impact.” The default \(E_0=2\) means livestock already starts about twice its allocation. That overshoot is an empirical input, not a bug.
-
-| Key | Typical value | Meaning |
-| --- | --- | --- |
-| `E0` | 2.0 | Starting pressure / allocation (>1 = already past the cap) |
-| `E_lim` | 1.0 | Livestock share of the 2050 food-system ceiling |
-| `kappa` | 0.144 | Extra land/feed footprint per unit of quality (about +14.4% per kg at ECC) |
-| `alpha_E` | 1.952e-10 | Pressure generated per standing animal-year |
-| `delta_E` | 1.0 | How fast \(E\) tracks headcount (1/year; flow-like, not a 50-year carbon stock) |
-| `beta` | 0.20 | Scarcity markup in the price ODE: \(\exp(\beta (E-E_0)/E_{\lim})\) |
-| `gamma` | 0.50 | How fast retail price adjusts toward cost (1/year) |
-
-### Labor / operational ceiling
-
-| Key | Typical value | Meaning |
-| --- | --- | --- |
-| `L0` | 1.0 | Farm labor (FTE index) at \(t_0\) |
-| `xi_lim` | 1.2625e10 | Maximum animals per FTE-index before operational failure |
-| `xi_star` | 1.515e10 | Midpoint of the failure Hill function |
-| `sigma0` | 0.35 | Maximum quality drain when staffing is overloaded (1/year; calibration) |
-| `sigma_p` | 6 | Steepness of that overload switch |
-| `delta_L` | 0.02 | Background decline of high-income agricultural labor (1/year) |
-| `theta_L` | 2.0e-13 | Weak hiring response to headcount (calibration) |
-
-### Campaign controls and budget
-
-| Key | Typical value | Meaning |
-| --- | --- | --- |
-| `lambda_D` | 0.04 | Extra demand decay at \(u_D=1\) (1/year; **calibration**) |
-| `eta_W` | 0.25 | Speed of quality improvement at \(u_W=1\) (1/year; **calibration**) |
-| `c_W` / `c_D` | 1.0 | Budget cost per unit of welfare / demand-reduction effort |
-| `B` | 2.0 | Annual budget. Default 2 allows \((u_W,u_D)=(1,1)\): the question is “what mix is required,” not “what mix is affordable.” |
-
-Do not read `lambda_D` or `eta_W` as measured cost-effectiveness. They are knobs. The tornado plot shows how much the ranking moves when they (and other assumptions) change.
-
-### Sensitivity spec
-
-`configs/sensitivity.yaml` lists low/high pairs. The metric is cumulative SADs of the **constant joint** strategy (\(u_W=u_D=0.7\)), not a re-optimized policy. Default knobs: demand-reduction rate, price ceiling, high-welfare SAD rate, welfare footprint penalty, and BAU demand growth.
+Suffering is an **index**, not a census of global SADs. Rankings and ratios are the usable output; absolute billions are not a headcount of real days of suffering. Do not read `lambda_D` or `eta_W` as measured cost-effectiveness — they are knobs; the tornado plot shows how much the ranking moves when they (and other assumptions) change.
 
 ## Output structure
 

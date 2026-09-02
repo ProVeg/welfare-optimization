@@ -75,11 +75,13 @@ def evaluate_static(p: Params, alpha, u_w, u_d, label: str) -> StaticResult:
 
 
 def diagnostics(p: Params) -> list[StaticResult]:
+    # Joint: an even 50/50 split of the one unit annual advocacy budget
+    # (u_W + u_D <= 1), alpha kept under the u_W=0.5 attainable-share cap.
     return [
         evaluate_static(p, 0.10, 0.0, 0.0, "BAU"),
         evaluate_static(p, 0.50, 1.0, 0.0, "Welfare-only"),
         evaluate_static(p, 0.10, 0.0, 1.0, "Reduction-only"),
-        evaluate_static(p, 0.70, 0.7, 0.7, "Joint (diagnostic)"),
+        evaluate_static(p, 0.60, 0.5, 0.5, "Joint (diagnostic)"),
     ]
 
 

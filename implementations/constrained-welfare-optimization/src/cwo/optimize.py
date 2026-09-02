@@ -43,7 +43,7 @@ def _interp_control(mesh: np.ndarray, u_w: np.ndarray, u_d: np.ndarray):
 def _starts(n: int) -> list[tuple[str, np.ndarray, np.ndarray]]:
     ones = np.ones(n)
     zeros = np.zeros(n)
-    mix = 0.7 * ones
+    mix = 0.5 * ones  # even split of the one unit annual advocacy budget
     return [
         ("reduction_only", zeros, ones),
         ("joint", mix, mix),

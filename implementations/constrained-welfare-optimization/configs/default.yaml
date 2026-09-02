@@ -95,10 +95,12 @@ theta_L: 2.0e-13      # FTE-index / (animal-year); weak hiring vs headcount (cal
 lambda_D: 0.04        # 1/year; calibration: true
 # eta_W: u_W=1, u_D=0 can raise Q toward ECC in 5–10 years before ceilings bind.
 eta_W: 0.25           # 1/year; calibration: true
-c_W: 1.0              # budget units per unit u_W
-c_D: 1.0              # budget units per unit u_D
-# B=2 allows (u_W,u_D)=(1,1): "what mix is required" not "what mix is affordable".
-B: 2.0                # budget units / year
+# One unit annual advocacy budget: c_W*u_W + c_D*u_D <= B, B fixed at 1 by
+# normalization (not swept). u_W, u_D are the SHARE of that unit spent on each
+# lever, so (u_W,u_D)=(1,1) is infeasible: the two levers trade off directly.
+c_W: 1.0              # budget units per unit u_W (equal-cost default)
+c_D: 1.0              # budget units per unit u_D (equal-cost default)
+B: 1.0                # budget units / year; fixed by normalization, do not sweep
 
 # --- Solver -------------------------------------------------------------
 ivp_method: BDF
