@@ -1,5 +1,7 @@
 # Notes for model
 
+## Meeting with Pablo 03-09-2026
+
 Add parameter/function for welfare tech?
 
 Find the best and most respected numbers for SADs per species, and SAD improvements for welfare campaigns.
