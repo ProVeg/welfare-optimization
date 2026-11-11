@@ -106,6 +106,13 @@ Custom tornado ranges:
 python -m cwo sensitivity --config configs/default.yaml --spec configs/sensitivity.yaml --run-id sanity-sensitivity
 ```
 
+Re-run a past scenario to 2100 without optimizing, plus its tornado. A run's own `params.yaml` can be passed back as `--config`, so later edits to `default.yaml` don't change it. `configs/sensitivity-slow-advocacy.yaml` adds `eta_W`, `kappa_pi` (productivity lost per unit of welfare quality) and `s_coeff` (shift to smaller animals when prices rise) to the default ranges. Those three ranges are illustrative, not taken from literature.
+
+```powershell
+python -m cwo scenarios --config outputs/eat-lancet-overshoot-opt-slow-advocacy/params.yaml --set horizon.T=2100 --run-id eat-lancet-slow-advocacy-2100
+python -m cwo sensitivity --config outputs/eat-lancet-overshoot-opt-slow-advocacy/params.yaml --set horizon.T=2100 --spec configs/sensitivity-slow-advocacy.yaml --run-id eat-lancet-slow-advocacy-2100-sensitivity
+```
+
 ## Parameters
 
 All model numbers live in `configs/default.yaml`. Nested `horizon.*` keys can be overridden as `horizon.T=2100`; everything else is a top-level key (`N0=1.01e10`). Rates tagged as calibration in the YAML are **not measurements** — they are set so the open-loop diagnostics behave as described in the model document.

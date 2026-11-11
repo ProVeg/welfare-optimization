@@ -1,0 +1,55 @@
+# Tornado for the slow-advocacy scenario (eta_W = 0.1, lambda_D = 0.005).
+# Same nine ranges as sensitivity.yaml, plus the welfare-speed and
+# headcount-mechanism parameters (eta_W, kappa_pi, s_coeff).
+# The three added ranges are illustrative brackets around the base values,
+# not literature-derived bounds.
+# Metric: cumulative SADs of the joint constant-control diagnostic.
+parameters:
+  lambda_D:
+    low: 0.0
+    high: 0.06
+    label: "Demand-reduction rate"
+  eta_W:
+    low: 0.05
+    high: 0.25
+    label: "Welfare-campaign speed"
+  kappa_pi:
+    low: 0.0
+    high: 0.5
+    label: "Welfare productivity loss"
+  s_coeff:
+    low: 0.0
+    high: 0.4
+    label: "Species replacement"
+  P_lim:
+    low: 1.08
+    high: 1.30
+    label: "Price ceiling (WTP)"
+  phi_hw:
+    low: 0.4
+    high: 0.8
+    label: "High-welfare SAD rate"
+  kappa:
+    low: 0.11
+    high: 0.367
+    label: "Welfare footprint penalty"
+  r:
+    low: 0.007
+    high: 0.018
+    label: "BAU demand growth"
+  N_rho_over_N0:
+    low: 0.70
+    high: 1.00
+    label: "Density-relief threshold"
+  eta_rho:
+    low: 0.0
+    high: 0.16
+    label: "Density-relief speed"
+  N_delta_over_N0:
+    low: 0.50
+    high: 1.00
+    label: "Delicacy-price threshold"
+  nu_P:
+    low: 0.0
+    high: 0.50
+    label: "Delicacy-price exponent"
